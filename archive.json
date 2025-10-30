@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-19T00:56:00.653655+00:00",
+  "timestamp": "2025-10-30T00:53:24.690991+00:00",
   "repo": "fobser/draft-fobser-dnsop-dnssec-keyrestore",
   "labels": [
     {
@@ -63,6 +63,22 @@
       "body": "On 14/10/2025 13:59, Libor Peltan wrote:\n> At first, the new key is rolled in as a \"new KSK\", signing only the \n> DNSKEY rrset -- that part is OK. After that, the kind of \"ZSK rollover\" \n> takes place where all the common zone records are signed by the new CSK \n> instead of the older (missing) one. If I read correctly, you suggest \n> that all the records' signatures should appear in parallel, first new \n> ones introduced, only later the old removed. I think this is unnecessary \n> and has disadvantages. I would rather first wait for the new CSK to be \n> pusblished long enough and then exchanged all the common zone RRSIGs at \n> once, by atomically removing the old (abandoned) ones and publishing the \n> new. This is actually how it works for the \"ZSK missing, KSK available\" \n> case and the \"KSK+",
       "createdAt": "2025-10-16T13:59:44Z",
       "updatedAt": "2025-10-16T13:59:44Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOP7pIk87UflFs",
+      "title": "Clarify needed new keys for algorithm roll",
+      "url": "https://github.com/fobser/draft-fobser-dnsop-dnssec-keyrestore/issues/5",
+      "state": "OPEN",
+      "author": "fobser",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "On 2025-10-16 16:51 +02, Peter Thomassen <peter=40desec.io@dmarc.ietf.org> wrote:\n> - Section 4.1, second paragraph: This is under the assumption that\n> keys for both algorithms are inoperable, correct? If one is, one\n> doesn't need to add two keys. (In general, I'd think that one needs to\n> add only one key per algorithm for which there is at least one\n> inoperable key.)\n",
+      "createdAt": "2025-10-29T09:19:47Z",
+      "updatedAt": "2025-10-29T09:19:47Z",
       "closedAt": null,
       "comments": []
     }
