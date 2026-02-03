@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-30T00:53:24.690991+00:00",
+  "timestamp": "2026-02-03T01:10:57.323774+00:00",
   "repo": "fobser/draft-fobser-dnsop-dnssec-keyrestore",
   "labels": [
     {
@@ -79,6 +79,38 @@
       "body": "On 2025-10-16 16:51 +02, Peter Thomassen <peter=40desec.io@dmarc.ietf.org> wrote:\n> - Section 4.1, second paragraph: This is under the assumption that\n> keys for both algorithms are inoperable, correct? If one is, one\n> doesn't need to add two keys. (In general, I'd think that one needs to\n> add only one key per algorithm for which there is at least one\n> inoperable key.)\n",
       "createdAt": "2025-10-29T09:19:47Z",
       "updatedAt": "2025-10-29T09:19:47Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOP7pIk87nkovc",
+      "title": "Add note about zones using CDS/CDNSKEY",
+      "url": "https://github.com/fobser/draft-fobser-dnsop-dnssec-keyrestore/issues/6",
+      "state": "OPEN",
+      "author": "rodecker",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "We cannot sign CDS and CDNSKEY records using the old DNSKEY. Therefore automated DS updates are not possible.",
+      "createdAt": "2026-02-02T10:22:37Z",
+      "updatedAt": "2026-02-02T10:22:37Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 7,
+      "id": "I_kwDOP7pIk87nkyO9",
+      "title": "Keep old SOA",
+      "url": "https://github.com/fobser/draft-fobser-dnsop-dnssec-keyrestore/issues/7",
+      "state": "OPEN",
+      "author": "rodecker",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "* Explain that we need to keep the old SOA record, otherwise it goes bogus if a resolver refreshes SOA before DNSKEY\n* After adding the new DNSKEY record to a zone, all name servers in the XFR pipeline need to be manually forced to retransfer the zone\n",
+      "createdAt": "2026-02-02T10:31:04Z",
+      "updatedAt": "2026-02-02T10:31:04Z",
       "closedAt": null,
       "comments": []
     }
