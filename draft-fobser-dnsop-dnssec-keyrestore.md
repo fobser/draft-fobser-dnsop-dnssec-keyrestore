@@ -179,10 +179,10 @@ If a regular key rollover is in progress, the procedures described in
 this document can be followed. They effectively cancel the ongoing key
 rollover and perform a new one.
 
-If an algorithm rollover is in progress, the procedures described in
-this document can be followed with the exception that two new keys
-MUST be added to the zone. One with the old algorithm and one with the
-new algorithm.
+If an algorithm rollover is in progress the procedures described in
+this document can be followed, with the exception that a that a new key
+MUST be added to the zone per algortihm for which there is an inoperable
+key.
 
 ## KSK / ZSK split, KSK operable, ZSK inoperable
 
@@ -415,3 +415,4 @@ the authors for their work:
 Additionally, we thank the following people for contributing ideas and feedback:
 
 * Libor Peltan
+* Peter Thomassen
