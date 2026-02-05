@@ -38,6 +38,7 @@ informative:
   RFC6781:
   RFC7583:
   RFC7958:
+  RFC8078:
   RFC9499:
   RFC9824:
   Shamir:
@@ -183,6 +184,18 @@ If an algorithm rollover is in progress the procedures described in
 this document can be followed, with the exception that a that a new key
 MUST be added to the zone per algortihm for which there is an inoperable
 key.
+
+## CDS/CDNSKEY considerations
+
+For restoring an inoperable KSK or CSK, a new DS record needs to be added
+to the parent zone. For child zones where this update process is ordinarily
+handled using CDS/DNSKEY records (see {{RFC8078}}) the DS update needs to
+be performed manually if the ZSK or CSK is inoperable. This is because
+CDS/DNSKEY records added to the child zone cannot be signed with the inoperable
+key, and thus cannot be cryptographically validated. Additionally, introducing
+CDS/CDNSKEY records in the zone would change the type bitmap of the NSEC or 
+NSEC3 record in the zone apex, which also cannot be re-signed with the 
+inoperable key.
 
 ## KSK / ZSK split, KSK operable, ZSK inoperable
 
