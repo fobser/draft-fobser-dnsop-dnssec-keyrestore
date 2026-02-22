@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-08T01:28:42.854692+00:00",
+  "timestamp": "2026-02-22T01:11:02.166940+00:00",
   "repo": "fobser/draft-fobser-dnsop-dnssec-keyrestore",
   "labels": [
     {
@@ -94,9 +94,17 @@
       "labels": [],
       "body": "We cannot sign CDS and CDNSKEY records using the old DNSKEY. Therefore automated DS updates are not possible.",
       "createdAt": "2026-02-02T10:22:37Z",
-      "updatedAt": "2026-02-02T10:22:37Z",
+      "updatedAt": "2026-02-19T14:58:42Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rodecker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We write in https://github.com/fobser/draft-fobser-dnsop-dnssec-keyrestore/pull/8/changes/d378b6a5ebdb1a36f95430566a3cf48cabda10ab that CDS/CDNSKEY is useless. It can also be a problem, because the bitmap for the apex NSEC record changes:\n\n`testdns.ripe.net.       3600    NSEC    ns1.nl-ams.testdns.ripe.net. NS SOA RRSIG NSEC DNSKEY CDS CDNSKEY`\n\nWrite that CDS/CDNKEY MUST not be added.",
+          "createdAt": "2026-02-19T14:58:42Z",
+          "updatedAt": "2026-02-19T14:58:42Z"
+        }
+      ]
     },
     {
       "number": 7,
@@ -110,7 +118,47 @@
       "labels": [],
       "body": "* Explain that we need to keep the old SOA record, otherwise it goes bogus if a resolver refreshes SOA before DNSKEY\n* After adding the new DNSKEY record to a zone, all name servers in the XFR pipeline need to be manually forced to retransfer the zone\n",
       "createdAt": "2026-02-02T10:31:04Z",
-      "updatedAt": "2026-02-02T10:31:04Z",
+      "updatedAt": "2026-02-19T15:01:07Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "rodecker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Explain why a bogus SOA is a problem. We need it for denial of existence proof:\n\n```\n$ dig +dnssec +cd testdns.ripe.net TXT       \n\n; <<>> DiG 9.20.12 <<>> +dnssec +cd testdns.ripe.net TXT\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 52582\n;; flags: qr rd ra cd; QUERY: 1, ANSWER: 0, AUTHORITY: 5, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags: do; udp: 1232\n; COOKIE: 00b51366e469b4c1010000006997256221b0ba3a8405351a (good)\n;; QUESTION SECTION:\n;testdns.ripe.net.              IN      TXT\n\n;; AUTHORITY SECTION:\ntestdns.ripe.net.       1173    IN      SOA     manus.authdns.ripe.net. dns.ripe.net. 1771330052 3600 600 864000 3600\ntestdns.ripe.net.       1173    IN      RRSIG   SOA 13 3 3600 20260303120732 20260217103732 34150 testdns.ripe.net. VfTi6EKk9eEwSSQKbTB664NMPAPHSjE36mzLb/Xinx1u7GC5y+TmxIcP zyavcWVbVFv0WelbRl3utYwVqufOVg==\ntestdns.ripe.net.       1173    IN      RRSIG   NSEC 13 3 3600 20260303120732 20260217103732 34150 testdns.ripe.net. uzWmVinYHSlfSimE546omHbp8fs3V38ovhD4vyfMImJwvK2FJxgq7J8u /UjpENdAK+l0kAm9rMVoejr1NNMO1g==\ntestdns.ripe.net.       1173    IN      RRSIG   NSEC 13 3 3600 20260305125246 20260219112246 6405 testdns.ripe.net. qu3jZWUvGglOGuV/aGdJk5438dBkSQmL5WDmbmz9UPsnYaOJ2oh7sfJd AD5opcq9YAAd0tfiCcQGpMizx0IEfQ==\ntestdns.ripe.net.       1173    IN      NSEC    ns1.nl-ams.testdns.ripe.net. NS SOA RRSIG NSEC DNSKEY CDS CDNSKEY\n```",
+          "createdAt": "2026-02-19T15:01:07Z",
+          "updatedAt": "2026-02-19T15:01:07Z"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOP7pIk87sNgF_",
+      "title": "CSK - describe when zone may be modified again",
+      "url": "https://github.com/fobser/draft-fobser-dnsop-dnssec-keyrestore/issues/9",
+      "state": "OPEN",
+      "author": "rodecker",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In the ZSK scenario well tell at which point it is safe to modify the zone without records going bogus. We need to make explicit when this point in time is reached for the CSK scenario.",
+      "createdAt": "2026-02-19T13:19:55Z",
+      "updatedAt": "2026-02-19T13:19:55Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOP7pIk87svXQX",
+      "title": "Introduction - change scope",
+      "url": "https://github.com/fobser/draft-fobser-dnsop-dnssec-keyrestore/issues/10",
+      "state": "OPEN",
+      "author": "rodecker",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "On 20/02/2026 18:03, Wes Hardaker wrote:\n> So either: the document should clearly state this is only for zones that\n> make use of HSMs or similar technologies, or should be framed more\n> generically to benefit anyone that loses their key regardless of how.\n> I'd opt for the second option.",
+      "createdAt": "2026-02-21T10:57:26Z",
+      "updatedAt": "2026-02-21T10:57:26Z",
       "closedAt": null,
       "comments": []
     }
