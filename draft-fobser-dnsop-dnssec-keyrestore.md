@@ -41,15 +41,6 @@ informative:
   RFC8078:
   RFC9499:
   RFC9824:
-  Shamir:
-    title: How to Share a Secret
-    author:
-     -
-        fullname: Adi Shamir
-    seriesinfo:
-      "ACM Press": "Communications of the ACM, Vol. 22, No. 11, pp. 612-613"
-      DOI: 10.1145/359168.359176
-    date: 1979-11
 
 --- abstract
 
@@ -62,40 +53,17 @@ case a DNSSEC private key becomes inoperable.
 # Introduction
 
 DNSSEC {{RFC9364}} uses public key cryptography to provide integrity
-protection of DNS data. From an operational point of view, it is
-critically important to keep the private key secret under all
-circumstances.
+protection of DNS data. The private key used for DNSSEC signing could
+become inoperable at any point due to hardware failure, natural disaster,
+operator error, or malicious action. If no backup of the private key exist
+(due to hardware limitations or operational policies) or if the backup is
+unusable for some reason, a zone can no longer be changed or re-signed.
 
-The private key is typically kept secret by using Hardware Security
-Modules (HSMs). HSMs are designed to perform cryptographic operations
-such as creating keys and signing messages without disclosing the
-private key. Alternatively the DNSSEC signer is an appliance or
-commodity server hardware and operational policy stipulates that the
-private key must not leave the signer.
-
-Operationally this is a risk because only a single key exists. The
-key could become inoperable at any point due to hardware failure,
-natural disaster, operator error, or malicious action.
-
-It is difficult to create backups of the private key. After all, the
-system is designed to prevent backups. A compromise is usually reached
-by using a secret sharing scheme, e.g. {{Shamir}}. The private key is
-split into N pieces inside of the HSM, which are then distributed to
-key share holders. In case the private key becomes inoperable, M out
-of the N key share holders need to come together to restore the secret
-key.
-
-A key sharing scheme does not mitigate all risk. When
-more than N-M key shares become unavailable a restore cannot be
-performed, because not enough key shares are available. This is
-particularly challenging in small to medium sized teams.
-
-Unlike the private key, a DNSSEC signed zone can be considered public
-data with its integrity protected by signatures. Signed zones can be
-added to the normal, established backup procedures.
-
-The rest of the document describes procedures on how to restore DNSSEC
-signing functionality with only a backup of the signed zone available.
+This document describes procedures on how to restore the DNSSEC signing
+functionality without rendering a zone temporarily insecure or bogus.
+For these procedures, it is assumed a complete copy of the DNSSEC signed zone
+is still available. If no (usable) backup exists, it may be possible to recover
+this from one of the zone's name servers.
 
 # Conventions and Definitions
 
