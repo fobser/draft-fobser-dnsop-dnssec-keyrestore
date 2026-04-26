@@ -55,7 +55,7 @@ informative:
 
 This document describes the issues surrounding the handling of DNSSEC
 private keys in a DNSSEC signer. It presents operational guidance in
-case a DNSSEC private key becoming inoperable.
+case a DNSSEC private key becomes inoperable.
 
 --- middle
 
