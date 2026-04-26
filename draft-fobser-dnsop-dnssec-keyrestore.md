@@ -429,6 +429,8 @@ Event 5: The old DS record can be removed from the parent zone at Trem.
 At the same time the old, inoperable CSK and all its signatures can be
 removed as well.
 
+At this point the zone can be changed again.
+
 # Security Considerations
 
 All security considerations of {{RFC9364}} apply to this document.
