@@ -63,7 +63,7 @@ This document describes procedures on how to restore the DNSSEC signing
 functionality without rendering a zone temporarily insecure or bogus.
 For these procedures, it is assumed a complete copy of the DNSSEC signed zone
 is still available. If no (usable) backup exists, it may be possible to recover
-this from one of the zone's name servers.
+the signed zone from one of the zone's name servers.
 
 # Conventions and Definitions
 
@@ -149,16 +149,16 @@ this document can be followed. They effectively cancel the ongoing key
 rollover and perform a new one.
 
 If an algorithm rollover is in progress the procedures described in
-this document can be followed, with the exception that a that a new key
-MUST be added to the zone per algortihm for which there is an inoperable
+this document can be followed, with the exception that a new key MUST
+be added to the zone per algorithm for which there is an inoperable
 key.
 
 ## SOA considerations
 
 When restoring an inoperable ZSK or CSK, the SOA record of the zone SHOULD NOT
-be changed when introducing a new key in the DNSKEY RRset, because the SOA 
+be changed when introducing a new key in the DNSKEY RRset, because the SOA
 cannot be re-signed with the inoperable key. In case the SOA is changed, signed
-responses for existing records will remain valid, but denial of existence 
+responses for existing records will remain valid, but denial of existence
 proofs for non-existent record types will become bogus.
 
 To ensure the zone is still propagated, any secondary name servers relying on
@@ -172,8 +172,8 @@ handled using CDS/DNSKEY records (see {{RFC8078}}) the DS update needs to
 be performed manually if the ZSK or CSK is inoperable. This is because
 CDS/DNSKEY records added to the child zone cannot be signed with the inoperable
 key, and thus cannot be cryptographically validated. Additionally, introducing
-CDS/CDNSKEY records in the zone would change the type bitmap of the NSEC or 
-NSEC3 record in the zone apex, which also cannot be re-signed with the 
+CDS/CDNSKEY records in the zone would change the type bitmap of the NSEC or
+NSEC3 record in the zone apex, which also cannot be re-signed with the
 inoperable key.
 
 ## KSK / ZSK split, KSK operable, ZSK inoperable
