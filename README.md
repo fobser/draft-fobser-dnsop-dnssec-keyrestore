@@ -2,12 +2,12 @@
 
 # DNSSEC Key Restore
 
-This is the working area for the individual Internet-Draft, "DNSSEC Key Restore".
+This is the working area for the IETF [DNSOP Working Group](https://datatracker.ietf.org/group/dnsop/documents/) Internet-Draft, "DNSSEC Key Restore".
 
-* [Editor's Copy](https://fobser.github.io/draft-fobser-dnsop-dnssec-keyrestore/#go.draft-fobser-dnsop-dnssec-keyrestore.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-fobser-dnsop-dnssec-keyrestore)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-fobser-dnsop-dnssec-keyrestore)
-* [Compare Editor's Copy to Individual Draft](https://fobser.github.io/draft-fobser-dnsop-dnssec-keyrestore/#go.draft-fobser-dnsop-dnssec-keyrestore.diff)
+* [Editor's Copy](https://fobser.github.io/draft-fobser-dnsop-dnssec-keyrestore/#go.draft-ietf-dnsop-dnssec-keyrestore.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-dnsop-dnssec-keyrestore)
+* [Working Group Draft](https://datatracker.ietf.org/doc/html/draft-ietf-dnsop-dnssec-keyrestore)
+* [Compare Editor's Copy to Working Group Draft](https://fobser.github.io/draft-fobser-dnsop-dnssec-keyrestore/#go.draft-ietf-dnsop-dnssec-keyrestore.diff)
 
 
 ## Contributing
