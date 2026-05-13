@@ -18,6 +18,7 @@
 /versioned/
 archive.json
 draft-fobser-dnsop-dnssec-keyrestore.xml
+draft-ietf-dnsop-dnssec-keyrestore.xml
 Gemfile.lock
 package-lock.json
 report.xml
