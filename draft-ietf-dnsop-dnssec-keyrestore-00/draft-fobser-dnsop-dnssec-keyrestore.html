@@ -10,13 +10,13 @@
 <meta content="
        This document describes the issues surrounding the handling of DNSSEC
 private keys in a DNSSEC signer. It presents operational guidance in
-case a DNSSEC private key becomes inoperable. 
+case a DNSSEC private key becoming inoperable. 
     " name="description">
 <meta content="xml2rfc 3.33.0" name="generator">
 <meta content="DNSSEC" name="keyword">
 <meta content="disaster recovery" name="keyword">
 <meta content="backup and restore" name="keyword">
-<meta content="draft-ietf-dnsop-dnssec-keyrestore-latest" name="ietf.draft">
+<meta content="draft-fobser-dnsop-dnssec-keyrestore-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.33.0
     Python 3.12.13
@@ -31,7 +31,7 @@ case a DNSSEC private key becomes inoperable.
     requests 2.33.1
     wcwidth 0.7.0
 -->
-<link href="draft-ietf-dnsop-dnssec-keyrestore.xml" rel="alternate" type="application/rfc+xml">
+<link href="draft-fobser-dnsop-dnssec-keyrestore.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">@font-face {
   font-family: 'Lora';
@@ -1064,7 +1064,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dt class="label-workgroup">Workgroup:</dt>
 <dd class="workgroup">Domain Name System Operations</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
-<dd class="internet-draft">draft-ietf-dnsop-dnssec-keyrestore-latest</dd>
+<dd class="internet-draft">draft-fobser-dnsop-dnssec-keyrestore-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
 <time datetime="2026-05-13" class="published">13 May 2026</time>
@@ -1091,7 +1091,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document describes the issues surrounding the handling of DNSSEC
 private keys in a DNSSEC signer. It presents operational guidance in
-case a DNSSEC private key becomes inoperable.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+case a DNSSEC private key becoming inoperable.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1168,19 +1168,13 @@ case a DNSSEC private key becomes inoperable.<a href="#section-abstract-1" class
                 <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-key-rollover-considerations" class="internal xref">Key Rollover Considerations</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-soa-considerations" class="internal xref">SOA considerations</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-ksk-zsk-split-ksk-operable-" class="internal xref">KSK / ZSK split, KSK operable, ZSK inoperable</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
-                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-cds-cdnskey-considerations" class="internal xref">CDS/CDNSKEY considerations</a></p>
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-ksk-zsk-split-ksk-inoperabl" class="internal xref">KSK / ZSK split, KSK inoperable</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
-                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-ksk-zsk-split-ksk-operable-" class="internal xref">KSK / ZSK split, KSK operable, ZSK inoperable</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5">
-                <p id="section-toc.1-1.4.2.5.1"><a href="#section-4.5" class="auto internal xref">4.5</a>.  <a href="#name-ksk-zsk-split-ksk-inoperabl" class="internal xref">KSK / ZSK split, KSK inoperable</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.6">
-                <p id="section-toc.1-1.4.2.6.1"><a href="#section-4.6" class="auto internal xref">4.6</a>.  <a href="#name-csk-inoperable" class="internal xref">CSK inoperable</a></p>
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-csk-inoperable" class="internal xref">CSK inoperable</a></p>
 </li>
             </ul>
 </li>
@@ -1217,16 +1211,34 @@ case a DNSSEC private key becomes inoperable.<a href="#section-abstract-1" class
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
 <p id="section-1-1">DNSSEC <span>[<a href="#RFC9364" class="cite xref">RFC9364</a>]</span> uses public key cryptography to provide integrity
-protection of DNS data. The private key used for DNSSEC signing could
-become inoperable at any point due to hardware failure, natural disaster,
-operator error, or malicious action. If no backup of the private key exist
-(due to hardware limitations or operational policies) or if the backup is
-unusable for some reason, a zone can no longer be changed or re-signed.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">This document describes procedures on how to restore the DNSSEC signing
-functionality without rendering a zone temporarily insecure or bogus.
-For these procedures, it is assumed a complete copy of the DNSSEC signed zone
-is still available. If no (usable) backup exists, it may be possible to recover
-the signed zone from one of the zone's name servers.<a href="#section-1-2" class="pilcrow">¶</a></p>
+protection of DNS data. From an operational point of view, it is
+critically important to keep the private key secret under all
+circumstances.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">The private key is typically kept secret by using Hardware Security
+Modules (HSMs). HSMs are designed to perform cryptographic operations
+such as creating keys and signing messages without disclosing the
+private key. Alternatively the DNSSEC signer is an appliance or
+commodity server hardware and operational policy stipulates that the
+private key must not leave the signer.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Operationally this is a risk because only a single key exists. The
+key could become inoperable at any point due to hardware failure,
+natural disaster, operator error, or malicious action.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">It is difficult to create backups of the private key. After all, the
+system is designed to prevent backups. A compromise is usually reached
+by using a secret sharing scheme, e.g. <span>[<a href="#Shamir" class="cite xref">Shamir</a>]</span>. The private key is
+split into N pieces inside of the HSM, which are then distributed to
+key share holders. In case the private key becomes inoperable, M out
+of the N key share holders need to come together to restore the secret
+key.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">A key sharing scheme does not mitigate all risk. When
+more than N-M key shares become unavailable a restore cannot be
+performed, because not enough key shares are available. This is
+particularly challenging in small to medium sized teams.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">Unlike the private key, a DNSSEC signed zone can be considered public
+data with its integrity protected by signatures. Signed zones can be
+added to the normal, established backup procedures.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">The rest of the document describes procedures on how to restore DNSSEC
+signing functionality with only a backup of the signed zone available.<a href="#section-1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1323,57 +1335,27 @@ algorithm rollover can be performed.<a href="#section-4-8" class="pilcrow">¶</a
 <p id="section-4.1-1">If a regular key rollover is in progress, the procedures described in
 this document can be followed. They effectively cancel the ongoing key
 rollover and perform a new one.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">If an algorithm rollover is in progress the procedures described in
-this document can be followed, with the exception that a new key <span class="bcp14">MUST</span>
-be added to the zone per algorithm for which there is an inoperable
-key.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="soa-considerations">
-<section id="section-4.2">
-        <h3 id="name-soa-considerations">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-soa-considerations" class="section-name selfRef">SOA considerations</a>
-        </h3>
-<p id="section-4.2-1">When restoring an inoperable ZSK or CSK, the SOA record of the zone <span class="bcp14">SHOULD NOT</span>
-be changed when introducing a new key in the DNSKEY RRset, because the SOA
-cannot be re-signed with the inoperable key. In case the SOA is changed, signed
-responses for existing records will remain valid, but denial of existence
-proofs for non-existent record types will become bogus.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">To ensure the zone is still propagated, any secondary name servers relying on
-IXFR/AXFR need to be manually forced to load the new version of the zone.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="cdscdnskey-considerations">
-<section id="section-4.3">
-        <h3 id="name-cds-cdnskey-considerations">
-<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-cds-cdnskey-considerations" class="section-name selfRef">CDS/CDNSKEY considerations</a>
-        </h3>
-<p id="section-4.3-1">For restoring an inoperable KSK or CSK, a new DS record needs to be added
-to the parent zone. For child zones where this update process is ordinarily
-handled using CDS/DNSKEY records (see <span>[<a href="#RFC8078" class="cite xref">RFC8078</a>]</span>) the DS update needs to
-be performed manually if the ZSK or CSK is inoperable. This is because
-CDS/DNSKEY records added to the child zone cannot be signed with the inoperable
-key, and thus cannot be cryptographically validated. Additionally, introducing
-CDS/CDNSKEY records in the zone would change the type bitmap of the NSEC or
-NSEC3 record in the zone apex, which also cannot be re-signed with the
-inoperable key.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">If an algorithm rollover is in progress, the procedures described in
+this document can be followed with the exception that two new keys
+<span class="bcp14">MUST</span> be added to the zone. One with the old algorithm and one with the
+new algorithm.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="ksk-zsk-split-ksk-operable-zsk-inoperable">
-<section id="section-4.4">
+<section id="section-4.2">
         <h3 id="name-ksk-zsk-split-ksk-operable-">
-<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-ksk-zsk-split-ksk-operable-" class="section-name selfRef">KSK / ZSK split, KSK operable, ZSK inoperable</a>
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-ksk-zsk-split-ksk-operable-" class="section-name selfRef">KSK / ZSK split, KSK operable, ZSK inoperable</a>
         </h3>
-<p id="section-4.4-1">Since the old ZSK is inoperable, it cannot be used to create new
+<p id="section-4.2-1">Since the old ZSK is inoperable, it cannot be used to create new
 RRSIGs. Therefore the zone cannot be changed and only the Pre-Publication
-method can be used. See <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.1.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
-<p id="section-4.4-2">Section 3.2.1 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this
-method.<a href="#section-4.4-2" class="pilcrow">¶</a></p>
-<p id="section-4.4-3">The following diagram shows the timeline of the restoration.
+method can be used. See <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.1.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">Section 3.2.1 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this
+method.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.2-3">The following diagram shows the timeline of the restoration.
 Time increases along the horizontal scale from left to right and the vertical
 lines indicate events in the process. Significant times and time intervals
-are marked.<a href="#section-4.4-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.4-4">
+are marked.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.2-4">
 <pre>
               |1|      |2|   |3|      |4|
                |        |     |        |
@@ -1385,70 +1367,66 @@ Key N                                 Trem
 Key N+1        Tpub    Trdy  Tact
 
                   ---- Time ----&gt;
-</pre><a href="#section-4.4-4" class="pilcrow">¶</a>
+</pre><a href="#section-4.2-4" class="pilcrow">¶</a>
 </div>
-<p id="section-4.4-5">Event 1: The new ZSK is added to the DNSKEY RRset at its publication time
-(Tpub).<a href="#section-4.4-5" class="pilcrow">¶</a></p>
-<p id="section-4.4-6">The inoperable ZSK and all RRSIGs it created <span class="bcp14">MUST</span> remain in the zone.<a href="#section-4.4-6" class="pilcrow">¶</a></p>
-<p id="section-4.4-7">The SOA record of the zone <span class="bcp14">SHOULD NOT</span> be changed at this point in time,
-because it cannot be re-signed with the inoperable key. Any secondary
-name servers relying on IXFR/AXFR need to be manually forced to load
-the new version of the zone.<a href="#section-4.4-7" class="pilcrow">¶</a></p>
-<p id="section-4.4-8">The new ZSK must be published long enough to guarantee that any cached
+<p id="section-4.2-5">Event 1: The new ZSK is added to the DNSKEY RRset at its publication time
+(Tpub).<a href="#section-4.2-5" class="pilcrow">¶</a></p>
+<p id="section-4.2-6">The inoperable ZSK and all RRSIGs it created <span class="bcp14">MUST</span> remain in the zone.<a href="#section-4.2-6" class="pilcrow">¶</a></p>
+<p id="section-4.2-7">The new ZSK must be published long enough to guarantee that any cached
 DNSKEY RRset contains the new ZSK. This interval is the publication
-interval (Ipub), given by<a href="#section-4.4-8" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.4-9">
+interval (Ipub), given by<a href="#section-4.2-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.2-8">
 <pre>
 Ipub = Dprp + TTLkey
-</pre><a href="#section-4.4-9" class="pilcrow">¶</a>
+</pre><a href="#section-4.2-8" class="pilcrow">¶</a>
 </div>
-<p id="section-4.4-10">Dprp is the propagation delay, the time it takes for changes to
+<p id="section-4.2-9">Dprp is the propagation delay, the time it takes for changes to
 propagate to all authoritative nameserver instances. TTLkey is the TTL
-of the DNSKEY RRset.<a href="#section-4.4-10" class="pilcrow">¶</a></p>
-<p id="section-4.4-11">Event 2: The new ZSK can be used when it becomes ready at Trdy.<a href="#section-4.4-11" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.4-12">
+of the DNSKEY RRset.<a href="#section-4.2-9" class="pilcrow">¶</a></p>
+<p id="section-4.2-10">Event 2: The new ZSK can be used when it becomes ready at Trdy.<a href="#section-4.2-10" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.2-11">
 <pre>
 Trdy = Tpub + Ipub.
-</pre><a href="#section-4.4-12" class="pilcrow">¶</a>
+</pre><a href="#section-4.2-11" class="pilcrow">¶</a>
 </div>
-<p id="section-4.4-13">At this point the zone can be changed again.<a href="#section-4.4-13" class="pilcrow">¶</a></p>
-<p id="section-4.4-14">Event 3: At some later time, the zone is signed with the new ZSK. At this
+<p id="section-4.2-12">At this point the zone can be changed again.<a href="#section-4.2-12" class="pilcrow">¶</a></p>
+<p id="section-4.2-13">Event 3: At some later time, the zone is signed with the new ZSK. At this
 point RRSIGs from the inoperable ZSK can be removed. The inoperable ZSK
-<span class="bcp14">MUST</span> be retained in the DNSKEY RRset.<a href="#section-4.4-14" class="pilcrow">¶</a></p>
-<p id="section-4.4-15">Event 4: The inoperable ZSK can be removed after the retire interval (Iret).<a href="#section-4.4-15" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.4-16">
+<span class="bcp14">MUST</span> be retained in the DNSKEY RRset.<a href="#section-4.2-13" class="pilcrow">¶</a></p>
+<p id="section-4.2-14">Event 4: The inoperable ZSK can be removed after the retire interval (Iret).<a href="#section-4.2-14" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.2-15">
 <pre>
 Iret = Dsgn + Dprp + TTLsig
-</pre><a href="#section-4.4-16" class="pilcrow">¶</a>
+</pre><a href="#section-4.2-15" class="pilcrow">¶</a>
 </div>
-<p id="section-4.4-17">Dsgn is the delay needed to ensure that all existing RRsets are signed
+<p id="section-4.2-16">Dsgn is the delay needed to ensure that all existing RRsets are signed
 with the new ZSK, Dprp is the propagation delay and TTLsig is the
-maximum TTL of all RRSIG records.<a href="#section-4.4-17" class="pilcrow">¶</a></p>
-<p id="section-4.4-18">Theoretically the Double-Signature method could be used as well. In this case
+maximum TTL of all RRSIG records.<a href="#section-4.2-16" class="pilcrow">¶</a></p>
+<p id="section-4.2-17">Theoretically the Double-Signature method could be used as well. In this case
 records in the zone can only be changed after the retire interval, which is at
 least as long as the publication interval of the Pre-Publication
-method. The Double-Signature retire interval is given by:<a href="#section-4.4-18" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.4-19">
+method. The Double-Signature retire interval is given by:<a href="#section-4.2-17" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.2-18">
 <pre>
 Iret = Dsgn + Dprp + max(TTLkey, TTLsig)
-</pre><a href="#section-4.4-19" class="pilcrow">¶</a>
+</pre><a href="#section-4.2-18" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="ksk-zsk-split-ksk-inoperable">
-<section id="section-4.5">
+<section id="section-4.3">
         <h3 id="name-ksk-zsk-split-ksk-inoperabl">
-<a href="#section-4.5" class="section-number selfRef">4.5. </a><a href="#name-ksk-zsk-split-ksk-inoperabl" class="section-name selfRef">KSK / ZSK split, KSK inoperable</a>
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-ksk-zsk-split-ksk-inoperabl" class="section-name selfRef">KSK / ZSK split, KSK inoperable</a>
         </h3>
-<p id="section-4.5-1">Since the old KSK is inoperable, the DNSKEY RRset cannot be
+<p id="section-4.3-1">Since the old KSK is inoperable, the DNSKEY RRset cannot be
 changed. Therefore, only the Double-DS method can be used. See
-<span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.2.<a href="#section-4.5-1" class="pilcrow">¶</a></p>
-<p id="section-4.5-2">If the ZSK is inoperable as well, it <span class="bcp14">MUST NOT</span> be restored yet.<a href="#section-4.5-2" class="pilcrow">¶</a></p>
-<p id="section-4.5-3">Section 3.3.2 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this
-method.<a href="#section-4.5-3" class="pilcrow">¶</a></p>
-<p id="section-4.5-4">The following diagram shows the timeline of the restoration.
-The diagram follows the convention described in Section 4.1.<a href="#section-4.5-4" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.5-5">
+<span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.2.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">If the ZSK is inoperable as well, it <span class="bcp14">MUST NOT</span> be restored yet.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.3-3">Section 3.3.2 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this
+method.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<p id="section-4.3-4">The following diagram shows the timeline of the restoration.
+The diagram follows the convention described in Section 4.1.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.3-5">
 <pre>
             |1|      |2|       |3|  |4|      |5|
              |        |         |    |        |
@@ -1460,77 +1438,73 @@ Key N                                        Trem
 Key N+1     Tsbm     Tpub      Trdy Tact
 
                  ---- Time ----&gt;
-</pre><a href="#section-4.5-5" class="pilcrow">¶</a>
+</pre><a href="#section-4.3-5" class="pilcrow">¶</a>
 </div>
-<p id="section-4.5-6">Event 1: A new DS record is added to the DS RRset in the parent
-zone, this is the submission time, Tsbm.<a href="#section-4.5-6" class="pilcrow">¶</a></p>
-<p id="section-4.5-7">Event 2: After the registration delay, Dreg, the DS record is
-published in the parent zone. This is the publication time (Tpub).<a href="#section-4.5-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.5-8">
+<p id="section-4.3-6">Event 1: A new DS record is added to the DS RRset in the parent
+zone, this is the submission time, Tsbm.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+<p id="section-4.3-7">Event 2: After the registration delay, Dreg, the DS record is
+published in the parent zone. This is the publication time (Tpub).<a href="#section-4.3-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.3-8">
 <pre>
 Tpub = Tsbm + Dreg.
-</pre><a href="#section-4.5-8" class="pilcrow">¶</a>
+</pre><a href="#section-4.3-8" class="pilcrow">¶</a>
 </div>
-<p id="section-4.5-9">The DS record must be published long enough to guarantee that any
+<p id="section-4.3-9">The DS record must be published long enough to guarantee that any
 cached DS RRset contains the new DS record. This is the parent
-publication interval (IpubP).<a href="#section-4.5-9" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.5-10">
+publication interval (IpubP).<a href="#section-4.3-9" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.3-10">
 <pre>
 IpubP = DprpP + TTLds
-</pre><a href="#section-4.5-10" class="pilcrow">¶</a>
+</pre><a href="#section-4.3-10" class="pilcrow">¶</a>
 </div>
-<p id="section-4.5-11">DprpP is the propagation delay of the parent zone, i.e. the time it
+<p id="section-4.3-11">DprpP is the propagation delay of the parent zone, i.e. the time it
 takes for changes to propagate to all authoritative servers of the
-parent zone. TTLds is the TTL of the DS RRset at the parent.<a href="#section-4.5-11" class="pilcrow">¶</a></p>
-<p id="section-4.5-12">Event 3: The new KSK can be used when it becomes ready at Trdy.<a href="#section-4.5-12" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.5-13">
+parent zone. TTLds is the TTL of the DS RRset at the parent.<a href="#section-4.3-11" class="pilcrow">¶</a></p>
+<p id="section-4.3-12">Event 3: The new KSK can be used when it becomes ready at Trdy.<a href="#section-4.3-12" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.3-13">
 <pre>
 Trdy = Tpub + IpubP
-</pre><a href="#section-4.5-13" class="pilcrow">¶</a>
+</pre><a href="#section-4.3-13" class="pilcrow">¶</a>
 </div>
-<p id="section-4.5-14">Event 4: At this point, Tact, the new KSK is added to the DNSKEY
-RRset and used to generate the DNSKEY RRSIG. The old, inoperable
-KSK can be removed. The ZSK <span class="bcp14">MUST</span> remain in the DNSKEY RRset.<a href="#section-4.5-14" class="pilcrow">¶</a></p>
-<p id="section-4.5-15">If the ZSK is inoperable, the SOA record of the zone <span class="bcp14">SHOULD NOT</span> be
-changed at this point in time, because it cannot be re-signed with
-the inoperable key. Any secondary name servers relying on IXFR/AXFR
-need to be manually forced to load the new version of the zone.
-The ZSK signing function can be restored using the procedure in
-the previous section.<a href="#section-4.5-15" class="pilcrow">¶</a></p>
-<p id="section-4.5-16">To ensure that no caches have DNSKEY RRset with the old KSK, the old
+<p id="section-4.3-14">Event 4: At this point, Tact, the new KSK is added to the DNSKEY
+RRset and used to generate the DNSKEY RRsig. The old, inoperable
+KSK can be removed. The ZSK <span class="bcp14">MUST</span> remain in the DNSKEY RRset.<a href="#section-4.3-14" class="pilcrow">¶</a></p>
+<p id="section-4.3-15">If the ZSK is inoperable, the ZSK signing function can be now be
+restored using the procedure in the previous section.<a href="#section-4.3-15" class="pilcrow">¶</a></p>
+<p id="section-4.3-16">To ensure that no caches have DNSKEY RRset with the old KSK, the old
 DS record <span class="bcp14">MUST</span> remain in the parent zone for the duration of the
-retire interval (Iret), given by:<a href="#section-4.5-16" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.5-17">
+retire interval (Iret), given by:<a href="#section-4.3-16" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.3-17">
 <pre>
 Iret = DprpC + TTLkey
-</pre><a href="#section-4.5-17" class="pilcrow">¶</a>
+</pre><a href="#section-4.3-17" class="pilcrow">¶</a>
 </div>
-<p id="section-4.5-18">DprpC is the child propagation delay, the time it takes for changes to
+<p id="section-4.3-18">DprpC is the child propagation delay, the time it takes for changes to
 propagate to all authoritative nameserver instances of the child
-zone. TTLkey is the TTL of the DNSKEY RRset.<a href="#section-4.5-18" class="pilcrow">¶</a></p>
-<p id="section-4.5-19">Event 5: The old DS record can be removed from the parent zone at Trem.<a href="#section-4.5-19" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.5-20">
+zone. TTLkey is the TTL of the DNSKEY RRset.<a href="#section-4.3-18" class="pilcrow">¶</a></p>
+<p id="section-4.3-19">Event 5: The old DS record can be removed from the parent zone at Trem.<a href="#section-4.3-19" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.3-20">
 <pre>
 Trem = Tact + Iret
-</pre><a href="#section-4.5-20" class="pilcrow">¶</a>
+</pre><a href="#section-4.3-20" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="csk-inoperable">
-<section id="section-4.6">
+<section id="section-4.4">
         <h3 id="name-csk-inoperable">
-<a href="#section-4.6" class="section-number selfRef">4.6. </a><a href="#name-csk-inoperable" class="section-name selfRef">CSK inoperable</a>
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-csk-inoperable" class="section-name selfRef">CSK inoperable</a>
         </h3>
-<p id="section-4.6-1">Since the old CSK is inoperable, the DNSKEY RRset cannot be
+<p id="section-4.4-1">Since the old CSK is inoperable, the DNSKEY RRset cannot be
 changed. Therefore, only the Double-DS method can be used. See
-<span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.2.<a href="#section-4.6-1" class="pilcrow">¶</a></p>
-<p id="section-4.6-2">Section 3.3.2 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this method.<a href="#section-4.6-2" class="pilcrow">¶</a></p>
-<p id="section-4.6-3">Since the CSK is also used to sign the zone, the timing of the
-Double-DS method needs to be adjusted.<a href="#section-4.6-3" class="pilcrow">¶</a></p>
-<p id="section-4.6-4">The inoperable CSK and all RRSIGs it created <span class="bcp14">MUST</span> remain in the zone.<a href="#section-4.6-4" class="pilcrow">¶</a></p>
-<p id="section-4.6-5">The following diagram shows the timeline of the restoration.
-The diagram follows the convention described in Section 4.1.<a href="#section-4.6-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.6-6">
+<span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.2.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<p id="section-4.4-2">Section 3.3.2 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this method.<a href="#section-4.4-2" class="pilcrow">¶</a></p>
+<p id="section-4.4-3">Since the CSK is also used to sign the zone, the timing of the
+Double-DS method needs to be adjusted.<a href="#section-4.4-3" class="pilcrow">¶</a></p>
+<p id="section-4.4-4">The inoperable CSK and all RRSIGs it created <span class="bcp14">MUST</span> remain in the zone.<a href="#section-4.4-4" class="pilcrow">¶</a></p>
+<p id="section-4.4-5">The following diagram shows the timeline of the restoration.
+The diagram follows the convention described in Section 4.1.<a href="#section-4.4-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.4-6">
 <pre>
             |1|      |2|       |3|  |4|      |5|
              |        |         |    |        |
@@ -1542,64 +1516,60 @@ Key N                                        Trem
 Key N+1     Tsbm     Tpub      Trdy Tact
 
                  ---- Time ----&gt;
-</pre><a href="#section-4.6-6" class="pilcrow">¶</a>
+</pre><a href="#section-4.4-6" class="pilcrow">¶</a>
 </div>
-<p id="section-4.6-7">Event 1: A new DS record is added to the DS RRset in the parent zone,
-this is the submission time, Tsbm.<a href="#section-4.6-7" class="pilcrow">¶</a></p>
-<p id="section-4.6-8">Event 2: After the registration delay, Dreg, the DS record is published
-in the parent zone. This is the publication time (Tpub).<a href="#section-4.6-8" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.6-9">
+<p id="section-4.4-7">Event 1: A new DS record is added to the DS RRset in the parent zone,
+this is the submission time, Tsbm.<a href="#section-4.4-7" class="pilcrow">¶</a></p>
+<p id="section-4.4-8">Event 2: After the registration delay, Dreg, the DS record is published
+in the parent zone. This is the publication time (Tpub).<a href="#section-4.4-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.4-9">
 <pre>
 Tpub = Tsbm + Dreg.
-</pre><a href="#section-4.6-9" class="pilcrow">¶</a>
+</pre><a href="#section-4.4-9" class="pilcrow">¶</a>
 </div>
-<p id="section-4.6-10">The DS record must be published long enough to guarantee that any
+<p id="section-4.4-10">The DS record must be published long enough to guarantee that any
 cached DS RRset contains the new DS record. This is the parent
-publication interval (IpubP) given by<a href="#section-4.6-10" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.6-11">
+publication interval (IpubP) given by<a href="#section-4.4-10" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.4-11">
 <pre>
 IpubP = DprpP + TTLds
-</pre><a href="#section-4.6-11" class="pilcrow">¶</a>
+</pre><a href="#section-4.4-11" class="pilcrow">¶</a>
 </div>
-<p id="section-4.6-12">DprpP is the propagation delay of the parent zone, i.e. the time it
+<p id="section-4.4-12">DprpP is the propagation delay of the parent zone, i.e. the time it
 takes for changes to propagate to all authoritative servers of the
-parent zone. TTLds is the TTL of the DS RRset at the parent.<a href="#section-4.6-12" class="pilcrow">¶</a></p>
-<p id="section-4.6-13">Event 3: The new CSK can be used when it becomes ready at Trdy.<a href="#section-4.6-13" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.6-14">
+parent zone. TTLds is the TTL of the DS RRset at the parent.<a href="#section-4.4-12" class="pilcrow">¶</a></p>
+<p id="section-4.4-13">Event 3: The new CSK can be used when it becomes ready at Trdy.<a href="#section-4.4-13" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.4-14">
 <pre>
 Trdy = Tpub + IpubP
-</pre><a href="#section-4.6-14" class="pilcrow">¶</a>
+</pre><a href="#section-4.4-14" class="pilcrow">¶</a>
 </div>
-<p id="section-4.6-15">Event 4: At this point the new CSK is added to the DNSKEY RRset and
-used to generate the DNSKEY RRSIG.<a href="#section-4.6-15" class="pilcrow">¶</a></p>
-<p id="section-4.6-16">The old, inoperable CSK <span class="bcp14">MUST</span> remain in the DNSKEY RRset. The RRSIGs
-generated by the inoperable CSK <span class="bcp14">MUST</span> remain in the zone.<a href="#section-4.6-16" class="pilcrow">¶</a></p>
-<p id="section-4.6-17">The SOA record of the zone <span class="bcp14">SHOULD NOT</span> be changed at this point in time,
-because it cannot be re-signed with the inoperable key. Any secondary
-name servers relying on IXFR/AXFR need to be manually forced to load
-the new version of the zone.<a href="#section-4.6-17" class="pilcrow">¶</a></p>
-<p id="section-4.6-18">To ensure that no caches have DNSKEY RRset with the old CSK, the old
+<p id="section-4.4-15">Event 4: At this point the new CSK is added to the DNSKEY RRset and
+used to generate the DNSKEY RRsig. The old, inoperable CSK <span class="bcp14">MUST</span> remain
+in the DNSKEY RRset. The new CSK can be used to generate the RRsigs for
+the rest of the zone. The RRSIGs generated by the inoperable CSK <span class="bcp14">MUST</span>
+remain in the zone.<a href="#section-4.4-15" class="pilcrow">¶</a></p>
+<p id="section-4.4-16">To ensure that no caches have DNSKEY RRset with the old CSK, the old
 DS record <span class="bcp14">MUST</span> remain in the parent zone for the duration of the
-retire interval (Iret), given by:<a href="#section-4.6-18" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.6-19">
+retire interval (Iret), given by:<a href="#section-4.4-16" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.4-17">
 <pre>
 Iret = Dsgn + DprpC + max(TTLkey, TTLsig)
-</pre><a href="#section-4.6-19" class="pilcrow">¶</a>
+</pre><a href="#section-4.4-17" class="pilcrow">¶</a>
 </div>
-<p id="section-4.6-20">Dsgn is the delay needed to ensure that all existing RRsets are signed
+<p id="section-4.4-18">Dsgn is the delay needed to ensure that all existing RRsets are signed
 with the new CSK. DprpC is the child propagation delay, the time it
 takes for changes to propagate to all authoritative nameserver
 instances of the child zone. TTLkey is the TTL of the DNSKEY RRset and
-TTLsig is the maximum TTL of all RRSIG records.<a href="#section-4.6-20" class="pilcrow">¶</a></p>
-<p id="section-4.6-21">Event 5: The old DS record can be removed from the parent zone at Trem.<a href="#section-4.6-21" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.6-22">
+TTLsig is the maximum TTL of all RRSIG records.<a href="#section-4.4-18" class="pilcrow">¶</a></p>
+<p id="section-4.4-19">Event 5: The old DS record can be removed from the parent zone at Trem.<a href="#section-4.4-19" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.4-20">
 <pre>
 Trem = Tact + Iret
-</pre><a href="#section-4.6-22" class="pilcrow">¶</a>
+</pre><a href="#section-4.4-20" class="pilcrow">¶</a>
 </div>
-<p id="section-4.6-23">At the same time the old, inoperable CSK and all its signatures can be
-removed as well.<a href="#section-4.6-23" class="pilcrow">¶</a></p>
-<p id="section-4.6-24">At this point the zone can be changed again.<a href="#section-4.6-24" class="pilcrow">¶</a></p>
+<p id="section-4.4-21">At the same time the old, inoperable CSK and all its signatures can be
+removed as well.<a href="#section-4.4-21" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1664,17 +1634,17 @@ removed as well.<a href="#section-4.6-23" class="pilcrow">¶</a></p>
         <dd>
 <span class="refAuthor">Abley, J.</span>, <span class="refAuthor">Schlyter, J.</span>, <span class="refAuthor">Bailey, G.</span>, and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"DNSSEC Trust Anchor Publication for the Root Zone"</span>, <span class="seriesInfo">RFC 7958</span>, <span class="seriesInfo">DOI 10.17487/RFC7958</span>, <time datetime="2016-08" class="refDate">August 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7958">https://www.rfc-editor.org/rfc/rfc7958</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="RFC8078">[RFC8078]</dt>
-        <dd>
-<span class="refAuthor">Gudmundsson, O.</span> and <span class="refAuthor">P. Wouters</span>, <span class="refTitle">"Managing DS Records from the Parent via CDS/CDNSKEY"</span>, <span class="seriesInfo">RFC 8078</span>, <span class="seriesInfo">DOI 10.17487/RFC8078</span>, <time datetime="2017-03" class="refDate">March 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8078">https://www.rfc-editor.org/rfc/rfc8078</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC9499">[RFC9499]</dt>
         <dd>
 <span class="refAuthor">Hoffman, P.</span> and <span class="refAuthor">K. Fujiwara</span>, <span class="refTitle">"DNS Terminology"</span>, <span class="seriesInfo">BCP 219</span>, <span class="seriesInfo">RFC 9499</span>, <span class="seriesInfo">DOI 10.17487/RFC9499</span>, <time datetime="2024-03" class="refDate">March 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9499">https://www.rfc-editor.org/rfc/rfc9499</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9824">[RFC9824]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Huque, S.</span>, <span class="refAuthor">Elmerot, C.</span>, and <span class="refAuthor">O. Gudmundsson</span>, <span class="refTitle">"Compact Denial of Existence in DNSSEC"</span>, <span class="seriesInfo">RFC 9824</span>, <span class="seriesInfo">DOI 10.17487/RFC9824</span>, <time datetime="2025-09" class="refDate">September 2025</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9824">https://www.rfc-editor.org/rfc/rfc9824</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Shamir">[Shamir]</dt>
+      <dd>
+<span class="refAuthor">Shamir, A.</span>, <span class="refTitle">"How to Share a Secret"</span>, <span class="seriesInfo">ACM Press Communications of the ACM, Vol. 22, No. 11, pp. 612-613</span>, <span class="seriesInfo">DOI 10.1145/359168.359176</span>, <time datetime="1979-11" class="refDate">November 1979</time>, <span>&lt;<a href="https://doi.org/10.1145/359168.359176">https://doi.org/10.1145/359168.359176</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -1700,21 +1670,6 @@ the authors for their work:<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.4">
           <p id="appendix-A-2.4.1">W. (Matthijs) Mekking<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
-</li>
-      </ul>
-<p id="appendix-A-3">Additionally, we thank the following people for contributing ideas and feedback:<a href="#appendix-A-3" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="appendix-A-4.1">
-          <p id="appendix-A-4.1.1">Libor Peltan<a href="#appendix-A-4.1.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="appendix-A-4.2">
-          <p id="appendix-A-4.2.1">Peter Thomassen<a href="#appendix-A-4.2.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="appendix-A-4.3">
-          <p id="appendix-A-4.3.1">Anand Buddhdev<a href="#appendix-A-4.3.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="appendix-A-4.4">
-          <p id="appendix-A-4.4.1">Wes Hardaker<a href="#appendix-A-4.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
