@@ -406,6 +406,26 @@ removed as well.
 
 At this point the zone can be changed again.
 
+# Implementation status
+
+RFC-EDITOR: This section is to be removed before publishing.
+
+The procedures described in this document have been verified with the following
+implementations.
+
+## Knot DNS
+
+Manual steps required:
+
+1. Import the old DNSKEY RR(s) into the key manager ("import-pub")
+2. Generate a new DNSKEY RRset in an empty zone
+3. Replace DNSKEY RRset + DNSKEY RRSIGs in the original zone with those from step 2
+4. Load the modified zone from step 3 with "dnssec-signing: off"
+
+Caveats:
+
+* Manually generating a new ZONEMD digest is not supported
+
 # Security Considerations
 
 All security considerations of {{RFC9364}} apply to this document.
