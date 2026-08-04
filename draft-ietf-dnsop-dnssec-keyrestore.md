@@ -41,6 +41,7 @@ informative:
   RFC8078:
   RFC9499:
   RFC9824:
+  RFC8976:
 
 --- abstract
 
@@ -175,6 +176,12 @@ key, and thus cannot be cryptographically validated. Additionally, introducing
 CDS/CDNSKEY records in the zone would change the type bitmap of the NSEC or
 NSEC3 record in the zone apex, which also cannot be re-signed with the
 inoperable key.
+
+## ZONEMD considerations
+
+If the zone contains a ZONEMD record (see {{RFC8976}}), the changes made to the
+DNSKEY RRset will invalidate the Digest in this record. Therefore a new ZONEMD
+record SHOULD be generated and DNSSEC-signed.
 
 ## KSK / ZSK split, KSK operable, ZSK inoperable
 
