@@ -5,11 +5,11 @@
 Domain Name System Operations                                   F. Obser
 Internet-Draft                                                   M. Pels
 Intended status: Informational                                  RIPE NCC
-Expires: 12 November 2026                                    11 May 2026
+Expires: 5 February 2027                                   4 August 2026
 
 
                            DNSSEC Key Restore
-              draft-fobser-dnsop-dnssec-keyrestore-latest
+               draft-ietf-dnsop-dnssec-keyrestore-latest
 
 Abstract
 
@@ -43,7 +43,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 November 2026.
+   This Internet-Draft will expire on 5 February 2027.
 
 Copyright Notice
 
@@ -68,14 +68,17 @@ Table of Contents
      4.1.  Key Rollover Considerations
      4.2.  SOA considerations
      4.3.  CDS/CDNSKEY considerations
-     4.4.  KSK / ZSK split, KSK operable, ZSK inoperable
-     4.5.  KSK / ZSK split, KSK inoperable
-     4.6.  CSK inoperable
-   5.  Security Considerations
-   6.  IANA Considerations
-   7.  References
-     7.1.  Normative References
-     7.2.  Informative References
+     4.4.  ZONEMD considerations
+     4.5.  KSK / ZSK split, KSK operable, ZSK inoperable
+     4.6.  KSK / ZSK split, KSK inoperable
+     4.7.  CSK inoperable
+   5.  Implementation status
+     5.1.  Knot DNS
+   6.  Security Considerations
+   7.  IANA Considerations
+   8.  References
+     8.1.  Normative References
+     8.2.  Informative References
    Acknowledgments
    Authors' Addresses
 
@@ -212,7 +215,13 @@ Table of Contents
    record in the zone apex, which also cannot be re-signed with the
    inoperable key.
 
-4.4.  KSK / ZSK split, KSK operable, ZSK inoperable
+4.4.  ZONEMD considerations
+
+   If the zone contains a ZONEMD record (see [RFC8976]), the changes
+   made to the DNSKEY RRset will invalidate the Digest in this record.
+   Therefore a new ZONEMD record SHOULD be generated and DNSSEC-signed.
+
+4.5.  KSK / ZSK split, KSK operable, ZSK inoperable
 
    Since the old ZSK is inoperable, it cannot be used to create new
    RRSIGs.  Therefore the zone cannot be changed and only the Pre-
@@ -283,7 +292,7 @@ Table of Contents
 
    Iret = Dsgn + Dprp + max(TTLkey, TTLsig)
 
-4.5.  KSK / ZSK split, KSK inoperable
+4.6.  KSK / ZSK split, KSK inoperable
 
    Since the old KSK is inoperable, the DNSKEY RRset cannot be changed.
    Therefore, only the Double-DS method can be used.  See [RFC7583]
@@ -355,7 +364,7 @@ Table of Contents
 
    Trem = Tact + Iret
 
-4.6.  CSK inoperable
+4.7.  CSK inoperable
 
    Since the old CSK is inoperable, the DNSKEY RRset cannot be changed.
    Therefore, only the Double-DS method can be used.  See [RFC7583]
@@ -437,17 +446,41 @@ Table of Contents
 
    At this point the zone can be changed again.
 
-5.  Security Considerations
+5.  Implementation status
+
+   RFC-EDITOR: This section is to be removed before publishing.
+
+   The procedures described in this document have been verified with the
+   following implementations.
+
+5.1.  Knot DNS
+
+   Manual steps required:
+
+   1.  Import the old DNSKEY RR(s) into the key manager ("import-pub")
+
+   2.  Generate a new DNSKEY RRset in an empty zone
+
+   3.  Replace DNSKEY RRset + DNSKEY RRSIGs in the original zone with
+       those from step 2
+
+   4.  Load the modified zone from step 3 with "dnssec-signing: off"
+
+   Caveats:
+
+   *  Manually generating a new ZONEMD digest is not supported
+
+6.  Security Considerations
 
    All security considerations of [RFC9364] apply to this document.
 
-6.  IANA Considerations
+7.  IANA Considerations
 
    This document has no IANA actions.
 
-7.  References
+8.  References
 
-7.1.  Normative References
+8.1.  Normative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -462,7 +495,7 @@ Table of Contents
               RFC 9364, DOI 10.17487/RFC9364, February 2023,
               <https://www.rfc-editor.org/rfc/rfc9364>.
 
-7.2.  Informative References
+8.2.  Informative References
 
    [RFC6781]  Kolkman, O., Mekking, W., and R. Gieben, "DNSSEC
               Operational Practices, Version 2", RFC 6781,
@@ -483,6 +516,11 @@ Table of Contents
               the Parent via CDS/CDNSKEY", RFC 8078,
               DOI 10.17487/RFC8078, March 2017,
               <https://www.rfc-editor.org/rfc/rfc8078>.
+
+   [RFC8976]  Wessels, D., Barber, P., Weinberg, M., Kumari, W., and W.
+              Hardaker, "Message Digest for DNS Zones", RFC 8976,
+              DOI 10.17487/RFC8976, February 2021,
+              <https://www.rfc-editor.org/rfc/rfc8976>.
 
    [RFC9499]  Hoffman, P. and K. Fujiwara, "DNS Terminology", BCP 219,
               RFC 9499, DOI 10.17487/RFC9499, March 2024,

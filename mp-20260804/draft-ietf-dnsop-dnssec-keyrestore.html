@@ -10,29 +10,29 @@
 <meta content="
        This document describes the issues surrounding the handling of DNSSEC
 private keys in a DNSSEC signer. It presents operational guidance in
-case a DNSSEC private key becoming inoperable. 
+case a DNSSEC private key becomes inoperable. 
     " name="description">
-<meta content="xml2rfc 3.30.2" name="generator">
+<meta content="xml2rfc 3.34.0" name="generator">
 <meta content="DNSSEC" name="keyword">
 <meta content="disaster recovery" name="keyword">
 <meta content="backup and restore" name="keyword">
-<meta content="draft-fobser-dnsop-dnssec-keyrestore-latest" name="ietf.draft">
+<meta content="draft-ietf-dnsop-dnssec-keyrestore-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.30.2
-    Python 3.12.11
-    ConfigArgParse 1.7
+  xml2rfc 3.34.0
+    Python 3.14.5
+    ConfigArgParse 1.7.5
     google-i18n-address 3.1.1
-    intervaltree 3.1.0
+    intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 5.3.1
-    platformdirs 4.4.0
+    lxml 6.1.1
+    natsort 8.4.0
+    platformdirs 4.11.0
     pycountry 24.6.1
-    PyYAML 6.0.2
-    requests 2.32.5
-    setuptools 80.9.0
-    wcwidth 0.2.14
+    PyYAML 6.0.3
+    requests 2.33.1
+    wcwidth 0.8.2
 -->
-<link href="draft-fobser-dnsop-dnssec-keyrestore.xml" rel="alternate" type="application/rfc+xml">
+<link href="draft-ietf-dnsop-dnssec-keyrestore.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">@font-face {
   font-family: 'Lora';
@@ -66,7 +66,6 @@ case a DNSSEC private key becoming inoperable.
   src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
-
 @font-face {
   font-family: 'Lora';
   font-style: italic;
@@ -115,7 +114,6 @@ case a DNSSEC private key becoming inoperable.
   src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-
 @font-face {
   font-family: 'Lora';
   font-style: normal;
@@ -171,7 +169,7 @@ case a DNSSEC private key becoming inoperable.
   font-weight: 400;
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
   font-family: 'Oxygen Mono';
@@ -179,7 +177,7 @@ case a DNSSEC private key becoming inoperable.
   font-weight: 400;
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
@@ -296,16 +294,19 @@ h1, h2, h3, h4, h5, h6 {
   font-size-adjust: 0.5;
   color: var(--title-color);
 }
-h1#title {
-  font-size: 32px;
-  line-height: 40px;
-  clear: both;
-}
-h1#title, h1#rfcnum {
-  margin: 1.5em 0 0.2em;
-}
-h1#rfcnum + h1#title {
-  margin: 0.2em 0;
+h1 {
+  &#title {
+    font-size: 32px;
+    line-height: 40px;
+    clear: both;
+    margin: 1.5em 0 0.2em;
+  }
+  &#rfcnum {
+    margin: 1.5em 0 0.2em;
+    & + h1#title {
+      margin: 0.2em 0;
+    }
+  }
 }
 
 h1, h2, h3 {
@@ -325,10 +326,10 @@ h4, h5, h6 {
 #abstract+p {
   font-size: 18px;
   line-height: 24px;
-}
-#abstract+p code, #abstract+p samp, #abstract+p tt {
-  font-size: 16px;
-  line-height: 0;
+  & code, & samp, & tt {
+    font-size: 16px;
+    line-height: 0;
+  }
 }
 
 p {
@@ -339,59 +340,59 @@ p {
 div {
   margin: 0;
 }
-.alignRight.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignRight.art-text pre {
-  padding: 0;
-  width: auto;
-}
 .alignRight {
   margin: 1em 0;
-}
-.alignRight > *:first-child {
-  border: none;
-  margin: 0;
-  float: right;
-  clear: both;
-}
-.alignRight > *:nth-child(2) {
-  clear: both;
-  display: block;
-  border: none;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    margin: 0;
+    float: right;
+    clear: both;
+  }
+  & > *:nth-child(2) {
+    clear: both;
+    display: block;
+    border: none;
+  }
 }
 svg {
   display: block;
-}
-/* font-family isn't space-separated, but =~ will have to do */
-svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
-  font-family: var(--font-mono);
-}
-.alignCenter.art-text {
-  background-color: var(--highlight-color);
-  border: 1px solid var(--line-color);
-  border-radius: 3px;
-  padding: 0.5em 1em 0;
-  margin-bottom: 0.5em;
-}
-.alignCenter.art-text pre {
-  padding: 0;
-  width: auto;
+  /* font-family isn't space-separated, but =~ will have to do */
+  &[font-family~="monospace" i], & [font-family~="monospace" i] {
+    font-family: var(--font-mono);
+  }
 }
 .alignCenter {
   margin: 1em 0;
-}
-.alignCenter > *:first-child {
-  border: none;
-  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
-     support flexbox yet.
-  */
-  display: table;
-  margin: 0 auto;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+       support flexbox yet.
+    */
+    display: table;
+    margin: 0 auto;
+  }
 }
 
 /* lists */
@@ -429,26 +430,25 @@ dl {
     --indent: 5ch;
     & > dt {
       min-width: calc(var(--indent) - 2ch);
+      float: none;
     }
-  }
-  &.olPercent > dt {
-    float: none;
   }
 
   dl > dd > & {
     margin-top: 0.5em;
     margin-bottom: 0;
   }
-}
-dl:not(.dlNewline) > dt {
-  float: left;
-  margin-right: 2ch;
-  min-width: 8ch;
-}
-dl > dd {
-  margin-bottom: .8em;
-  margin-left: var(--indent) !important; /* stupid element overrides */
-  min-height: 2ex;
+
+  &:not(.dlNewline) > dt {
+    float: left;
+    margin-right: 2ch;
+    min-width: 8ch;
+  }
+  & > dd {
+    margin-bottom: .8em;
+    margin-left: var(--indent) !important; /* stupid element overrides */
+    min-height: 2ex;
+  }
 }
 :is(dl.compact, .dlCompact) > dd {
   margin-bottom: 0;
@@ -464,20 +464,22 @@ dl > dd {
 }
 
 /* links */
-a, a[href].selfRef:hover {
+a {
   text-decoration: none;
+  &[href] {
+    color: var(--link-color);
+    &:hover { text-decoration: underline; }
+    &.selfRef {
+      color: var(--text-color);
+      &:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+      }
+    }
+  }
 }
-a[href] {
-  color: var(--link-color);
-}
-a[href].selfRef, .iref + a[href].internal {
+.iref + a[href].internal {
   color: var(--text-color);
-}
-a[href]:hover {
-  text-decoration: underline;
-}
-a[href].selfRef:hover {
-  background-color: var(--highlight-color);
 }
 a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
   white-space: nowrap;
@@ -513,9 +515,9 @@ img {
 figure {
   margin: 0.5em 0;
   padding: 0;
-}
-figure blockquote {
-  margin: 0.8em 0.4em 0.4em;
+  & blockquote {
+    margin: 0.8em 0.4em 0.4em;
+  }
 }
 figcaption, caption {
   font-style: italic;
@@ -525,17 +527,19 @@ figcaption, caption {
 }
 @media screen {
   /* Auto-collapse boilerplate. */
-  :is(#status-of-memo, #copyright) p {
-    margin: -2px 0;
-    max-height: 0;
-    transition: max-height 2s ease, margin 0.5s ease 0.5s;
-    overflow: hidden;
-  }
-  :is(#status-of-memo, #copyright):hover p,
-  :is(#status-of-memo, #copyright) h2:target ~ p {
-    margin: 0.5em 0;
-    max-height: 500px;
-    overflow: auto;
+  :is(#status-of-memo, #copyright) {
+    & p {
+      margin: -2px 0;
+      max-height: 0;
+      transition: max-height 2s ease, margin 0.5s ease 0.5s;
+      overflow: hidden;
+    }
+    &:hover p,
+    & h2:target ~ p {
+      margin: 0.5em 0;
+      max-height: 500px;
+      overflow: auto;
+    }
   }
   pre, svg {
     display: inline-block;
@@ -571,6 +575,7 @@ aside, blockquote {
 }
 blockquote {
   margin: 1em 0;
+  border-left: 2px var(--pilcrow-strong) solid;
 }
 cite {
   display: block;
@@ -584,25 +589,17 @@ table {
   max-width: 100%;
   margin: 0 0 1em;
   border-collapse: collapse;
-}
-table.right {
-  margin-left: auto;
-}
-table.center {
-  margin-left: auto;
-  margin-right: auto;
-}
-table.left {
-  margin-right: auto;
-}
-table .text-left {
-  text-align: left;
-}
-table .text-center {
-  text-align: center;
-}
-table .text-right {
-  text-align: right;
+  &.right { margin-left: auto; }
+  &.center { margin-left: auto; margin-right: auto; }
+  &.left { margin-right: auto; }
+  & .text-left { text-align: left; }
+  & .text-center { text-align: center; }
+  & .text-right { text-align: right; }
+  & caption {
+    margin: 0;
+    padding: 3px 0 3px 1em;
+  }
+  & p { margin: 0; }
 }
 
 thead, tbody {
@@ -622,13 +619,6 @@ th {
 :is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
   background-color: var(--highlight-color);
 }
-table caption {
-  margin: 0;
-  padding: 3px 0 3px 1em;
-}
-table p {
-  margin: 0;
-}
 
 /* pilcrow */
 a.pilcrow {
@@ -639,18 +629,16 @@ a.pilcrow {
     color: var(--pilcrow-weak);
     &:hover { text-decoration: none; }
   }
-}
-@media not print {
-  :hover > a.pilcrow {
-    opacity: 1;
+  @media not print {
+    :hover > &, &:focus {
+      opacity: 1;
+    }
+    &[href]:hover {
+      color: var(--pilcrow-strong);
+      background-color: transparent;
+    }
   }
-  a.pilcrow[href]:hover {
-    color: var(--pilcrow-strong);
-    background-color: transparent;
-  }
-}
-@media print {
-  a.pilcrow {
+  @media print {
     display: none;
   }
 }
@@ -709,9 +697,9 @@ sub, sup {
   font-size: 0.9em;
   font-style: italic;
   margin-top: 2em;
-}
-.docInfo .prepared {
-  float: right;
+  & .prepared {
+    float: right;
+  }
 }
 
 /* table of contents */
@@ -801,23 +789,27 @@ hr.addr {
   max-width: calc(100% - 16px);
 }
 @media (min-width: 500px) {
-  #authors-addresses > section {
-    column-count: 2;
-    column-gap: 20px;
-  }
-  #authors-addresses > section > h2 {
-    column-span: all;
-  }
-  /* hack for break-inside: avoid-column */
-  #authors-addresses address {
-    display: inline-block;
-    break-inside: avoid-column;
+  #authors-addresses {
+    & > section {
+      column-count: 2;
+      column-gap: 20px;
+    }
+    & > section > h2 {
+      column-span: all;
+    }
+    /* hack for break-inside: avoid-column */
+    & address {
+      display: inline-block;
+      break-inside: avoid-column;
+    }
   }
 }
 
 /* Comments */
-.rfcEditorRemove p:first-of-type {
-  font-style: italic;
+.rfcEditorRemove {
+  & p:first-of-type {
+    font-style: italic;
+  }
 }
 .cref {
   background-color: rgba(249, 232, 105, 0.3);
@@ -828,19 +820,21 @@ hr.addr {
 }
 
 @media screen {
-  #toc nav {
-    font-family: var(--font-title);
-    font-weight: 360;
-    & > ul { margin-bottom: 2em; }
-    & ul {
-      margin: 0 0 0 4px;
-      & :is(p, li) {
-        margin: 2px 0;
+  #toc {
+    & nav {
+      font-family: var(--font-title);
+      font-weight: 360;
+      & > ul { margin-bottom: 2em; }
+      & ul {
+        margin: 0 0 0 4px;
+        & :is(p, li) {
+          margin: 2px 0;
+        }
       }
     }
-  }
-  #toc a.toplink {
-    float: right;
+    & a.toplink {
+      float: right;
+    }
   }
 }
 @media not screen {
@@ -861,54 +855,54 @@ hr.addr {
     margin: 0;
     border-bottom: 1px solid #ccc;
     opacity: 0.6;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 2px 0 2px 6px;
-    padding-right: 1em;
-    font-size: 18px;
-    line-height: 24px;
-    min-width: 190px;
-    text-align: right;
-    background-color: #444;
-    color: white;
-    cursor: pointer;
-    &::before { /* css hamburger */
-      float: right;
-      position: relative;
-      width: 1em;
-      height: 1px;
-      left: -164px;
-      margin: 8px 0 0 0;
-      background: white none repeat scroll 0 0;
-      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
-      content: "";
+    & h2 {
+      margin: 0;
+      padding: 2px 0 2px 6px;
+      padding-right: 1em;
+      font-size: 18px;
+      line-height: 24px;
+      min-width: 190px;
+      text-align: right;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      &::before { /* css hamburger */
+        float: right;
+        position: relative;
+        width: 1em;
+        height: 1px;
+        left: -164px;
+        margin: 8px 0 0 0;
+        background: white none repeat scroll 0 0;
+        box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+        content: "";
+      }
     }
-  }
-  #toc nav {
-    display: none;
-    background-color: var(--background-color);
-    padding: 0.5em 1em 1em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    height: calc(100vh - 48px);
-    border-left: 1px solid #ddd;
-  }
-  #toc.active {
-    opacity: 1;
-    & nav { display: block; }
-  }
-  /* Make the collapsed ToC header render white on gray also when it's a link */
-  #toc h2 a,
-  #toc h2 a:is(:link, :focus, :hover),
-  #toc a.toplink,
-  #toc a.toplink:hover {
-    color: white;
-    background-color: #444;
-    text-decoration: none;
-  }
-  #toc a.toplink {
-    margin: 2px 0.5em 0;
+    & nav {
+      display: none;
+      background-color: var(--background-color);
+      padding: 0.5em 1em 1em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      height: calc(100vh - 48px);
+      border-left: 1px solid #ddd;
+    }
+    &.active {
+      opacity: 1;
+      & nav { display: block; }
+    }
+    /* Make the collapsed ToC header render white on gray also when it's a link */
+    & h2 a,
+    & h2 a:is(:link, :focus, :hover),
+    & a.toplink,
+    & a.toplink:hover {
+      color: white;
+      background-color: #444;
+      text-decoration: none;
+    }
+    & a.toplink {
+      margin: 2px 0.5em 0;
+    }
   }
 }
 
@@ -927,26 +921,26 @@ hr.addr {
     margin: 0;
     padding: 0;
     z-index: 1;
-  }
-  #toc h2 {
-    margin: 0;
-    padding: 0.25em 1em 1em 0;
-  }
-  #toc nav {
-    display: block;
-    height: calc(90vh - 84px);
-    bottom: 0;
-    padding: 0.5em 0 2em;
-    overflow: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+    & h2 {
+      margin: 0;
+      padding: 0.25em 1em 1em 0;
+    }
+    & nav {
+      display: block;
+      height: calc(90vh - 84px);
+      bottom: 0;
+      padding: 0.5em 0 2em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+    & a.toplink {
+      margin: 8px 0.5em 0;
+    }
   }
   img { /* future proofing */
     max-width: 100%;
     height: auto;
-  }
-  #toc a.toplink {
-    margin: 8px 0.5em 0;
   }
 }
 
@@ -962,12 +956,13 @@ hr.addr {
   #n-copyright-notice {
     border-bottom: none;
   }
-  #toc, #n-introduction {
-    page-break-before: always;
-  }
   #toc {
+    page-break-before: always;
     border-top: none;
     padding-top: 0;
+  }
+  #n-introduction {
+    page-break-before: always;
   }
   figure, pre, .vcard {
     page-break-inside: avoid;
@@ -1029,17 +1024,19 @@ hr.addr {
 }
 
 /* SVG Trick: a prefix match works because only black and white are allowed */
-svg :is([stroke="black"], [stroke^="#000"]) {
-  stroke: var(--text-color);
-}
-svg :is([stroke="white"], [stroke^="#fff"]) {
-  stroke: var(--background-color);
-}
-svg :is([fill="black"], [fill^="#000"], :not([fill])) {
-  fill: var(--text-color);
-}
-svg :is([fill="white"], [fill^="#fff"]) {
-  fill: var(--background-color);
+svg {
+  & :is([stroke="black"], [stroke^="#000"]) {
+    stroke: var(--text-color);
+  }
+  & :is([stroke="white"], [stroke^="#fff"]) {
+    stroke: var(--background-color);
+  }
+  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+    fill: var(--text-color);
+  }
+  & :is([fill="white"], [fill^="#fff"]) {
+    fill: var(--background-color);
+  }
 }
 </style>
 
@@ -1049,11 +1046,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">DNSSEC Key Restore</td>
-<td class="right">October 2025</td>
+<td class="right">August 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Obser &amp; Pels</td>
-<td class="center">Expires 19 April 2026</td>
+<td class="center">Expires 5 February 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1063,15 +1060,15 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dt class="label-workgroup">Workgroup:</dt>
 <dd class="workgroup">Domain Name System Operations</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
-<dd class="internet-draft">draft-fobser-dnsop-dnssec-keyrestore-latest</dd>
+<dd class="internet-draft">draft-ietf-dnsop-dnssec-keyrestore-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-10-16" class="published">16 October 2025</time>
+<time datetime="2026-08-04" class="published">4 August 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-04-19">19 April 2026</time></dd>
+<dd class="expires"><time datetime="2027-02-05">5 February 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1090,7 +1087,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
 <p id="section-abstract-1">This document describes the issues surrounding the handling of DNSSEC
 private keys in a DNSSEC signer. It presents operational guidance in
-case a DNSSEC private key becoming inoperable.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+case a DNSSEC private key becomes inoperable.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1122,7 +1119,7 @@ case a DNSSEC private key becoming inoperable.<a href="#section-abstract-1" clas
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 19 April 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 5 February 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1131,7 +1128,7 @@ case a DNSSEC private key becoming inoperable.<a href="#section-abstract-1" clas
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2025 IETF Trust and the persons identified as the
+            Copyright (c) 2026 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1164,38 +1161,58 @@ case a DNSSEC private key becoming inoperable.<a href="#section-abstract-1" clas
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-dnssec-key-restore" class="internal xref">DNSSEC Key Restore</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
-                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-ksk-zsk-split-ksk-operable-" class="internal xref">KSK / ZSK split, KSK operable, ZSK inoperable</a></p>
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-key-rollover-considerations" class="internal xref">Key Rollover Considerations</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-ksk-zsk-split-ksk-inoperabl" class="internal xref">KSK / ZSK split, KSK inoperable</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-soa-considerations" class="internal xref">SOA considerations</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
-                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-csk-inoperable" class="internal xref">CSK inoperable</a></p>
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-cds-cdnskey-considerations" class="internal xref">CDS/CDNSKEY considerations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-zonemd-considerations" class="internal xref">ZONEMD considerations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5">
+                <p id="section-toc.1-1.4.2.5.1"><a href="#section-4.5" class="auto internal xref">4.5</a>.  <a href="#name-ksk-zsk-split-ksk-operable-" class="internal xref">KSK / ZSK split, KSK operable, ZSK inoperable</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.6">
+                <p id="section-toc.1-1.4.2.6.1"><a href="#section-4.6" class="auto internal xref">4.6</a>.  <a href="#name-ksk-zsk-split-ksk-inoperabl" class="internal xref">KSK / ZSK split, KSK inoperable</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.7">
+                <p id="section-toc.1-1.4.2.7.1"><a href="#section-4.7" class="auto internal xref">4.7</a>.  <a href="#name-csk-inoperable" class="internal xref">CSK inoperable</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-references" class="internal xref">References</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-implementation-status" class="internal xref">Implementation status</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-knot-dns" class="internal xref">Knot DNS</a></p>
 </li>
             </ul>
 </li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1207,34 +1224,16 @@ case a DNSSEC private key becoming inoperable.<a href="#section-abstract-1" clas
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
 <p id="section-1-1">DNSSEC <span>[<a href="#RFC9364" class="cite xref">RFC9364</a>]</span> uses public key cryptography to provide integrity
-protection of DNS data. From an operational point of view, it is
-critically important to keep the private key secret under all
-circumstances.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">The private key is typically kept secret by using Hardware Security
-Modules (HSMs). HSMs are designed to perform cryptographic operations
-such as creating keys and signing messages without disclosing the
-private key. Alternatively the DNSSEC signer is an appliance or
-commodity server hardware and operational policy stipulates that the
-private key must not leave the signer.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">Operationally this is a risk because only a single key exists. The
-key could become inoperable at any point due to hardware failure,
-natural disaster, operator error, or malicious action.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">It is difficult to create backups of the private key. After all, the
-system is designed to prevent backups. A compromise is usually reached
-by using a secret sharing scheme, e.g. <span>[<a href="#Shamir" class="cite xref">Shamir</a>]</span>. The private key is
-split into N pieces inside of the HSM, which are then distributed to
-key share holders. In case the private key becomes inoperable, M out
-of the N key share holders need to come together to restore the secret
-key.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">A key sharing scheme does not mitigate all risk. When
-more than N-M key shares become unavailable a restore cannot be
-performed, because not enough key shares are available. This is
-particularly challenging in small to medium sized teams.<a href="#section-1-5" class="pilcrow">¶</a></p>
-<p id="section-1-6">Unlike the private key, a DNSSEC signed zone can be considered public
-data with its integrity protected by signatures. Signed zones can be
-added to the normal, established backup procedures.<a href="#section-1-6" class="pilcrow">¶</a></p>
-<p id="section-1-7">The rest of the document describes procedures on how to restore DNSSEC
-signing functionality with only a backup of the signed zone available.<a href="#section-1-7" class="pilcrow">¶</a></p>
+protection of DNS data. The private key used for DNSSEC signing could
+become inoperable at any point due to hardware failure, natural disaster,
+operator error, or malicious action. If no backup of the private key exist
+(due to hardware limitations or operational policies) or if the backup is
+unusable for some reason, a zone can no longer be changed or re-signed.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">This document describes procedures on how to restore the DNSSEC signing
+functionality without rendering a zone temporarily insecure or bogus.
+For these procedures, it is assumed a complete copy of the DNSSEC signed zone
+is still available. If no (usable) backup exists, it may be possible to recover
+the signed zone from one of the zone's name servers.<a href="#section-1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1281,19 +1280,6 @@ a copy of the signing key(s). Thus, the operational challenges are different
 than described in the introduction.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">The root zone is out of scope since the distribution of a new trust
 anchor takes considerably longer than the RRSIG lifetime <span>[<a href="#RFC7958" class="cite xref">RFC7958</a>]</span>.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">Algorithm Rollovers as described in <span>[<a href="#RFC6781" class="cite xref">RFC6781</a>]</span>, section 4.1.4 are out of
-scope as well. They are already complicated enough and trying to recover
-from an inoperable DNSSEC private key while an algorithm rollover is being
-performed is unlikely to be successful.<a href="#section-3-3" class="pilcrow">¶</a></p>
-<p id="section-3-4">If the inoperable DNSSEC private key uses an old or deprecated
-algorithm, the procedures defined in this document cannot be used to
-perform an algorithm rollover. Instead the procedures defined in this
-document <span class="bcp14">SHOULD</span> be followed to first restore signing with the old
-algorithm. Once this has been completed a regular algorithm rollover
-can be performed.<a href="#section-3-4" class="pilcrow">¶</a></p>
-<p id="section-3-5">Regular key rollovers are in scope, since they do not pose extra
-challenges. The procedures described in this document effectively
-cancel a potentially ongoing key rollover and perform a new one.<a href="#section-3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="dnssec-key-restore">
@@ -1330,21 +1316,81 @@ to the zone before publication.<a href="#section-4-6" class="pilcrow">¶</a></p>
 <p id="section-4-7">The exact process depends on which key(s) are inoperable and if the
 zone is signed with a split KSK / ZSK key pair or a Combined Signing
 Key (CSK).<a href="#section-4-7" class="pilcrow">¶</a></p>
-<div id="ksk-zsk-split-ksk-operable-zsk-inoperable">
+<p id="section-4-8">Performing an Algorithm Rollover as described in <span>[<a href="#RFC6781" class="cite xref">RFC6781</a>]</span> using the
+procedures defined in this document is <span class="bcp14">NOT RECOMMENDED</span>. If an
+algorithm rollover is not already in progress, signing using the
+currently used algorithm should be restored first using the procedures
+defined in this document. Once this has been completed a regular
+algorithm rollover can be performed.<a href="#section-4-8" class="pilcrow">¶</a></p>
+<div id="key-rollover-considerations">
 <section id="section-4.1">
-        <h3 id="name-ksk-zsk-split-ksk-operable-">
-<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-ksk-zsk-split-ksk-operable-" class="section-name selfRef">KSK / ZSK split, KSK operable, ZSK inoperable</a>
+        <h3 id="name-key-rollover-considerations">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-key-rollover-considerations" class="section-name selfRef">Key Rollover Considerations</a>
         </h3>
-<p id="section-4.1-1">Since the old ZSK is inoperable, it cannot be used to create new
+<p id="section-4.1-1">If a regular key rollover is in progress, the procedures described in
+this document can be followed. They effectively cancel the ongoing key
+rollover and perform a new one.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">If an algorithm rollover is in progress the procedures described in
+this document can be followed, with the exception that a new key <span class="bcp14">MUST</span>
+be added to the zone per algorithm for which there is an inoperable
+key.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="soa-considerations">
+<section id="section-4.2">
+        <h3 id="name-soa-considerations">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-soa-considerations" class="section-name selfRef">SOA considerations</a>
+        </h3>
+<p id="section-4.2-1">When restoring an inoperable ZSK or CSK, the SOA record of the zone <span class="bcp14">SHOULD NOT</span>
+be changed when introducing a new key in the DNSKEY RRset, because the SOA
+cannot be re-signed with the inoperable key. In case the SOA is changed, signed
+responses for existing records will remain valid, but denial of existence
+proofs for non-existent record types will become bogus.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">To ensure the zone is still propagated, any secondary name servers relying on
+IXFR/AXFR need to be manually forced to load the new version of the zone.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="cdscdnskey-considerations">
+<section id="section-4.3">
+        <h3 id="name-cds-cdnskey-considerations">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-cds-cdnskey-considerations" class="section-name selfRef">CDS/CDNSKEY considerations</a>
+        </h3>
+<p id="section-4.3-1">For restoring an inoperable KSK or CSK, a new DS record needs to be added
+to the parent zone. For child zones where this update process is ordinarily
+handled using CDS/DNSKEY records (see <span>[<a href="#RFC8078" class="cite xref">RFC8078</a>]</span>) the DS update needs to
+be performed manually if the ZSK or CSK is inoperable. This is because
+CDS/DNSKEY records added to the child zone cannot be signed with the inoperable
+key, and thus cannot be cryptographically validated. Additionally, introducing
+CDS/CDNSKEY records in the zone would change the type bitmap of the NSEC or
+NSEC3 record in the zone apex, which also cannot be re-signed with the
+inoperable key.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="zonemd-considerations">
+<section id="section-4.4">
+        <h3 id="name-zonemd-considerations">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-zonemd-considerations" class="section-name selfRef">ZONEMD considerations</a>
+        </h3>
+<p id="section-4.4-1">If the zone contains a ZONEMD record (see <span>[<a href="#RFC8976" class="cite xref">RFC8976</a>]</span>), the changes made to the
+DNSKEY RRset will invalidate the Digest in this record. Therefore a new ZONEMD
+record <span class="bcp14">SHOULD</span> be generated and DNSSEC-signed.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ksk-zsk-split-ksk-operable-zsk-inoperable">
+<section id="section-4.5">
+        <h3 id="name-ksk-zsk-split-ksk-operable-">
+<a href="#section-4.5" class="section-number selfRef">4.5. </a><a href="#name-ksk-zsk-split-ksk-operable-" class="section-name selfRef">KSK / ZSK split, KSK operable, ZSK inoperable</a>
+        </h3>
+<p id="section-4.5-1">Since the old ZSK is inoperable, it cannot be used to create new
 RRSIGs. Therefore the zone cannot be changed and only the Pre-Publication
-method can be used. See <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.1.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
-<p id="section-4.1-2">Section 3.2.1 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this
-method.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
-<p id="section-4.1-3">The following diagram shows the timeline of the restoration.
+method can be used. See <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.1.<a href="#section-4.5-1" class="pilcrow">¶</a></p>
+<p id="section-4.5-2">Section 3.2.1 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this
+method.<a href="#section-4.5-2" class="pilcrow">¶</a></p>
+<p id="section-4.5-3">The following diagram shows the timeline of the restoration.
 Time increases along the horizontal scale from left to right and the vertical
 lines indicate events in the process. Significant times and time intervals
-are marked.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.1-4">
+are marked.<a href="#section-4.5-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.5-4">
 <pre>
               |1|      |2|   |3|      |4|
                |        |     |        |
@@ -1356,66 +1402,70 @@ Key N                                 Trem
 Key N+1        Tpub    Trdy  Tact
 
                   ---- Time ----&gt;
-</pre><a href="#section-4.1-4" class="pilcrow">¶</a>
+</pre><a href="#section-4.5-4" class="pilcrow">¶</a>
 </div>
-<p id="section-4.1-5">Event 1: The new ZSK is added to the DNSKEY RRset at its publication time
-(Tpub).<a href="#section-4.1-5" class="pilcrow">¶</a></p>
-<p id="section-4.1-6">The inoperable ZSK and all RRSIGs it created <span class="bcp14">MUST</span> remain in the zone.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
-<p id="section-4.1-7">The new ZSK must be published long enough to guarantee that any cached
+<p id="section-4.5-5">Event 1: The new ZSK is added to the DNSKEY RRset at its publication time
+(Tpub).<a href="#section-4.5-5" class="pilcrow">¶</a></p>
+<p id="section-4.5-6">The inoperable ZSK and all RRSIGs it created <span class="bcp14">MUST</span> remain in the zone.<a href="#section-4.5-6" class="pilcrow">¶</a></p>
+<p id="section-4.5-7">The SOA record of the zone <span class="bcp14">SHOULD NOT</span> be changed at this point in time,
+because it cannot be re-signed with the inoperable key. Any secondary
+name servers relying on IXFR/AXFR need to be manually forced to load
+the new version of the zone.<a href="#section-4.5-7" class="pilcrow">¶</a></p>
+<p id="section-4.5-8">The new ZSK must be published long enough to guarantee that any cached
 DNSKEY RRset contains the new ZSK. This interval is the publication
-interval (Ipub), given by<a href="#section-4.1-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.1-8">
+interval (Ipub), given by<a href="#section-4.5-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.5-9">
 <pre>
 Ipub = Dprp + TTLkey
-</pre><a href="#section-4.1-8" class="pilcrow">¶</a>
+</pre><a href="#section-4.5-9" class="pilcrow">¶</a>
 </div>
-<p id="section-4.1-9">Dprp is the propagation delay, the time it takes for changes to
+<p id="section-4.5-10">Dprp is the propagation delay, the time it takes for changes to
 propagate to all authoritative nameserver instances. TTLkey is the TTL
-of the DNSKEY RRset.<a href="#section-4.1-9" class="pilcrow">¶</a></p>
-<p id="section-4.1-10">Event 2: The new ZSK can be used when it becomes ready at Trdy.<a href="#section-4.1-10" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.1-11">
+of the DNSKEY RRset.<a href="#section-4.5-10" class="pilcrow">¶</a></p>
+<p id="section-4.5-11">Event 2: The new ZSK can be used when it becomes ready at Trdy.<a href="#section-4.5-11" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.5-12">
 <pre>
 Trdy = Tpub + Ipub.
-</pre><a href="#section-4.1-11" class="pilcrow">¶</a>
+</pre><a href="#section-4.5-12" class="pilcrow">¶</a>
 </div>
-<p id="section-4.1-12">At this point the zone can be changed again.<a href="#section-4.1-12" class="pilcrow">¶</a></p>
-<p id="section-4.1-13">Event 3: At some later time, the zone is signed with the new ZSK. At this
+<p id="section-4.5-13">At this point the zone can be changed again.<a href="#section-4.5-13" class="pilcrow">¶</a></p>
+<p id="section-4.5-14">Event 3: At some later time, the zone is signed with the new ZSK. At this
 point RRSIGs from the inoperable ZSK can be removed. The inoperable ZSK
-<span class="bcp14">MUST</span> be retained in the DNSKEY RRset.<a href="#section-4.1-13" class="pilcrow">¶</a></p>
-<p id="section-4.1-14">Event 4: The inoperable ZSK can be removed after the retire interval (Iret).<a href="#section-4.1-14" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.1-15">
+<span class="bcp14">MUST</span> be retained in the DNSKEY RRset.<a href="#section-4.5-14" class="pilcrow">¶</a></p>
+<p id="section-4.5-15">Event 4: The inoperable ZSK can be removed after the retire interval (Iret).<a href="#section-4.5-15" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.5-16">
 <pre>
 Iret = Dsgn + Dprp + TTLsig
-</pre><a href="#section-4.1-15" class="pilcrow">¶</a>
+</pre><a href="#section-4.5-16" class="pilcrow">¶</a>
 </div>
-<p id="section-4.1-16">Dsgn is the delay needed to ensure that all existing RRsets are signed
+<p id="section-4.5-17">Dsgn is the delay needed to ensure that all existing RRsets are signed
 with the new ZSK, Dprp is the propagation delay and TTLsig is the
-maximum TTL of all RRSIG records.<a href="#section-4.1-16" class="pilcrow">¶</a></p>
-<p id="section-4.1-17">Theoretically the Double-Signature method could be used as well. In this case
+maximum TTL of all RRSIG records.<a href="#section-4.5-17" class="pilcrow">¶</a></p>
+<p id="section-4.5-18">Theoretically the Double-Signature method could be used as well. In this case
 records in the zone can only be changed after the retire interval, which is at
 least as long as the publication interval of the Pre-Publication
-method. The Double-Signature retire interval is given by:<a href="#section-4.1-17" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.1-18">
+method. The Double-Signature retire interval is given by:<a href="#section-4.5-18" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.5-19">
 <pre>
 Iret = Dsgn + Dprp + max(TTLkey, TTLsig)
-</pre><a href="#section-4.1-18" class="pilcrow">¶</a>
+</pre><a href="#section-4.5-19" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="ksk-zsk-split-ksk-inoperable">
-<section id="section-4.2">
+<section id="section-4.6">
         <h3 id="name-ksk-zsk-split-ksk-inoperabl">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-ksk-zsk-split-ksk-inoperabl" class="section-name selfRef">KSK / ZSK split, KSK inoperable</a>
+<a href="#section-4.6" class="section-number selfRef">4.6. </a><a href="#name-ksk-zsk-split-ksk-inoperabl" class="section-name selfRef">KSK / ZSK split, KSK inoperable</a>
         </h3>
-<p id="section-4.2-1">Since the old KSK is inoperable, the DNSKEY RRset cannot be
+<p id="section-4.6-1">Since the old KSK is inoperable, the DNSKEY RRset cannot be
 changed. Therefore, only the Double-DS method can be used. See
-<span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.2.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
-<p id="section-4.2-2">If the ZSK is inoperable as well, it <span class="bcp14">MUST NOT</span> be restored yet.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
-<p id="section-4.2-3">Section 3.3.2 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this
-method.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
-<p id="section-4.2-4">The following diagram shows the timeline of the restoration.
-The diagram follows the convention described in Section 4.1.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.2-5">
+<span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.2.<a href="#section-4.6-1" class="pilcrow">¶</a></p>
+<p id="section-4.6-2">If the ZSK is inoperable as well, it <span class="bcp14">MUST NOT</span> be restored yet.<a href="#section-4.6-2" class="pilcrow">¶</a></p>
+<p id="section-4.6-3">Section 3.3.2 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this
+method.<a href="#section-4.6-3" class="pilcrow">¶</a></p>
+<p id="section-4.6-4">The following diagram shows the timeline of the restoration.
+The diagram follows the convention described in Section 4.1.<a href="#section-4.6-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.6-5">
 <pre>
             |1|      |2|       |3|  |4|      |5|
              |        |         |    |        |
@@ -1427,73 +1477,77 @@ Key N                                        Trem
 Key N+1     Tsbm     Tpub      Trdy Tact
 
                  ---- Time ----&gt;
-</pre><a href="#section-4.2-5" class="pilcrow">¶</a>
+</pre><a href="#section-4.6-5" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-6">Event 1: A new DS record is added to the DS RRset in the parent
-zone, this is the submission time, Tsbm.<a href="#section-4.2-6" class="pilcrow">¶</a></p>
-<p id="section-4.2-7">Event 2: After the registration delay, Dreg, the DS record is
-published in the parent zone. This is the publication time (Tpub).<a href="#section-4.2-7" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.2-8">
+<p id="section-4.6-6">Event 1: A new DS record is added to the DS RRset in the parent
+zone, this is the submission time, Tsbm.<a href="#section-4.6-6" class="pilcrow">¶</a></p>
+<p id="section-4.6-7">Event 2: After the registration delay, Dreg, the DS record is
+published in the parent zone. This is the publication time (Tpub).<a href="#section-4.6-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.6-8">
 <pre>
 Tpub = Tsbm + Dreg.
-</pre><a href="#section-4.2-8" class="pilcrow">¶</a>
+</pre><a href="#section-4.6-8" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-9">The DS record must be published long enough to guarantee that any
+<p id="section-4.6-9">The DS record must be published long enough to guarantee that any
 cached DS RRset contains the new DS record. This is the parent
-publication interval (IpubP).<a href="#section-4.2-9" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.2-10">
+publication interval (IpubP).<a href="#section-4.6-9" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.6-10">
 <pre>
 IpubP = DprpP + TTLds
-</pre><a href="#section-4.2-10" class="pilcrow">¶</a>
+</pre><a href="#section-4.6-10" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-11">DprpP is the propagation delay of the parent zone, i.e. the time it
+<p id="section-4.6-11">DprpP is the propagation delay of the parent zone, i.e. the time it
 takes for changes to propagate to all authoritative servers of the
-parent zone. TTLds is the TTL of the DS RRset at the parent.<a href="#section-4.2-11" class="pilcrow">¶</a></p>
-<p id="section-4.2-12">Event 3: The new KSK can be used when it becomes ready at Trdy.<a href="#section-4.2-12" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.2-13">
+parent zone. TTLds is the TTL of the DS RRset at the parent.<a href="#section-4.6-11" class="pilcrow">¶</a></p>
+<p id="section-4.6-12">Event 3: The new KSK can be used when it becomes ready at Trdy.<a href="#section-4.6-12" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.6-13">
 <pre>
 Trdy = Tpub + IpubP
-</pre><a href="#section-4.2-13" class="pilcrow">¶</a>
+</pre><a href="#section-4.6-13" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-14">Event 4: At this point, Tact, the new KSK is added to the DNSKEY
-RRset and used to generate the DNSKEY RRsig. The old, inoperable
-KSK can be removed. The ZSK <span class="bcp14">MUST</span> remain in the DNSKEY RRset.<a href="#section-4.2-14" class="pilcrow">¶</a></p>
-<p id="section-4.2-15">If the ZSK is inoperable, the ZSK signing function can be now be
-restored using the procedure in the previous section.<a href="#section-4.2-15" class="pilcrow">¶</a></p>
-<p id="section-4.2-16">To ensure that no caches have DNSKEY RRset with the old KSK, the old
+<p id="section-4.6-14">Event 4: At this point, Tact, the new KSK is added to the DNSKEY
+RRset and used to generate the DNSKEY RRSIG. The old, inoperable
+KSK can be removed. The ZSK <span class="bcp14">MUST</span> remain in the DNSKEY RRset.<a href="#section-4.6-14" class="pilcrow">¶</a></p>
+<p id="section-4.6-15">If the ZSK is inoperable, the SOA record of the zone <span class="bcp14">SHOULD NOT</span> be
+changed at this point in time, because it cannot be re-signed with
+the inoperable key. Any secondary name servers relying on IXFR/AXFR
+need to be manually forced to load the new version of the zone.
+The ZSK signing function can be restored using the procedure in
+the previous section.<a href="#section-4.6-15" class="pilcrow">¶</a></p>
+<p id="section-4.6-16">To ensure that no caches have DNSKEY RRset with the old KSK, the old
 DS record <span class="bcp14">MUST</span> remain in the parent zone for the duration of the
-retire interval (Iret), given by:<a href="#section-4.2-16" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.2-17">
+retire interval (Iret), given by:<a href="#section-4.6-16" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.6-17">
 <pre>
 Iret = DprpC + TTLkey
-</pre><a href="#section-4.2-17" class="pilcrow">¶</a>
+</pre><a href="#section-4.6-17" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-18">DprpC is the child propagation delay, the time it takes for changes to
+<p id="section-4.6-18">DprpC is the child propagation delay, the time it takes for changes to
 propagate to all authoritative nameserver instances of the child
-zone. TTLkey is the TTL of the DNSKEY RRset.<a href="#section-4.2-18" class="pilcrow">¶</a></p>
-<p id="section-4.2-19">Event 5: The old DS record can be removed from the parent zone at Trem.<a href="#section-4.2-19" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.2-20">
+zone. TTLkey is the TTL of the DNSKEY RRset.<a href="#section-4.6-18" class="pilcrow">¶</a></p>
+<p id="section-4.6-19">Event 5: The old DS record can be removed from the parent zone at Trem.<a href="#section-4.6-19" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.6-20">
 <pre>
 Trem = Tact + Iret
-</pre><a href="#section-4.2-20" class="pilcrow">¶</a>
+</pre><a href="#section-4.6-20" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="csk-inoperable">
-<section id="section-4.3">
+<section id="section-4.7">
         <h3 id="name-csk-inoperable">
-<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-csk-inoperable" class="section-name selfRef">CSK inoperable</a>
+<a href="#section-4.7" class="section-number selfRef">4.7. </a><a href="#name-csk-inoperable" class="section-name selfRef">CSK inoperable</a>
         </h3>
-<p id="section-4.3-1">Since the old CSK is inoperable, the DNSKEY RRset cannot be
+<p id="section-4.7-1">Since the old CSK is inoperable, the DNSKEY RRset cannot be
 changed. Therefore, only the Double-DS method can be used. See
-<span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.2.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
-<p id="section-4.3-2">Section 3.3.2 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this method.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
-<p id="section-4.3-3">Since the CSK is also used to sign the zone, the timing of the
-Double-DS method needs to be adjusted.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
-<p id="section-4.3-4">The inoperable CSK and all RRSIGs it created <span class="bcp14">MUST</span> remain in the zone.<a href="#section-4.3-4" class="pilcrow">¶</a></p>
-<p id="section-4.3-5">The following diagram shows the timeline of the restoration.
-The diagram follows the convention described in Section 4.1.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.3-6">
+<span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> section 2.2.<a href="#section-4.7-1" class="pilcrow">¶</a></p>
+<p id="section-4.7-2">Section 3.3.2 of <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span> documents the timeline for this method.<a href="#section-4.7-2" class="pilcrow">¶</a></p>
+<p id="section-4.7-3">Since the CSK is also used to sign the zone, the timing of the
+Double-DS method needs to be adjusted.<a href="#section-4.7-3" class="pilcrow">¶</a></p>
+<p id="section-4.7-4">The inoperable CSK and all RRSIGs it created <span class="bcp14">MUST</span> remain in the zone.<a href="#section-4.7-4" class="pilcrow">¶</a></p>
+<p id="section-4.7-5">The following diagram shows the timeline of the restoration.
+The diagram follows the convention described in Section 4.1.<a href="#section-4.7-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.7-6">
 <pre>
             |1|      |2|       |3|  |4|      |5|
              |        |         |    |        |
@@ -1505,89 +1559,131 @@ Key N                                        Trem
 Key N+1     Tsbm     Tpub      Trdy Tact
 
                  ---- Time ----&gt;
-</pre><a href="#section-4.3-6" class="pilcrow">¶</a>
+</pre><a href="#section-4.7-6" class="pilcrow">¶</a>
 </div>
-<p id="section-4.3-7">Event 1: A new DS record is added to the DS RRset in the parent zone,
-this is the submission time, Tsbm.<a href="#section-4.3-7" class="pilcrow">¶</a></p>
-<p id="section-4.3-8">Event 2: After the registration delay, Dreg, the DS record is published
-in the parent zone. This is the publication time (Tpub).<a href="#section-4.3-8" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.3-9">
+<p id="section-4.7-7">Event 1: A new DS record is added to the DS RRset in the parent zone,
+this is the submission time, Tsbm.<a href="#section-4.7-7" class="pilcrow">¶</a></p>
+<p id="section-4.7-8">Event 2: After the registration delay, Dreg, the DS record is published
+in the parent zone. This is the publication time (Tpub).<a href="#section-4.7-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.7-9">
 <pre>
 Tpub = Tsbm + Dreg.
-</pre><a href="#section-4.3-9" class="pilcrow">¶</a>
+</pre><a href="#section-4.7-9" class="pilcrow">¶</a>
 </div>
-<p id="section-4.3-10">The DS record must be published long enough to guarantee that any
+<p id="section-4.7-10">The DS record must be published long enough to guarantee that any
 cached DS RRset contains the new DS record. This is the parent
-publication interval (IpubP) given by<a href="#section-4.3-10" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.3-11">
+publication interval (IpubP) given by<a href="#section-4.7-10" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.7-11">
 <pre>
 IpubP = DprpP + TTLds
-</pre><a href="#section-4.3-11" class="pilcrow">¶</a>
+</pre><a href="#section-4.7-11" class="pilcrow">¶</a>
 </div>
-<p id="section-4.3-12">DprpP is the propagation delay of the parent zone, i.e. the time it
+<p id="section-4.7-12">DprpP is the propagation delay of the parent zone, i.e. the time it
 takes for changes to propagate to all authoritative servers of the
-parent zone. TTLds is the TTL of the DS RRset at the parent.<a href="#section-4.3-12" class="pilcrow">¶</a></p>
-<p id="section-4.3-13">Event 3: The new CSK can be used when it becomes ready at Trdy.<a href="#section-4.3-13" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.3-14">
+parent zone. TTLds is the TTL of the DS RRset at the parent.<a href="#section-4.7-12" class="pilcrow">¶</a></p>
+<p id="section-4.7-13">Event 3: The new CSK can be used when it becomes ready at Trdy.<a href="#section-4.7-13" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.7-14">
 <pre>
 Trdy = Tpub + IpubP
-</pre><a href="#section-4.3-14" class="pilcrow">¶</a>
+</pre><a href="#section-4.7-14" class="pilcrow">¶</a>
 </div>
-<p id="section-4.3-15">Event 4: At this point the new CSK is added to the DNSKEY RRset and
-used to generate the DNSKEY RRsig. The old, inoperable CSK <span class="bcp14">MUST</span> remain
-in the DNSKEY RRset. The new CSK can be used to generate the RRsigs for
-the rest of the zone. The RRSIGs generated by the inoperable CSK <span class="bcp14">MUST</span>
-remain in the zone.<a href="#section-4.3-15" class="pilcrow">¶</a></p>
-<p id="section-4.3-16">To ensure that no caches have DNSKEY RRset with the old CSK, the old
+<p id="section-4.7-15">Event 4: At this point the new CSK is added to the DNSKEY RRset and
+used to generate the DNSKEY RRSIG.<a href="#section-4.7-15" class="pilcrow">¶</a></p>
+<p id="section-4.7-16">The old, inoperable CSK <span class="bcp14">MUST</span> remain in the DNSKEY RRset. The RRSIGs
+generated by the inoperable CSK <span class="bcp14">MUST</span> remain in the zone.<a href="#section-4.7-16" class="pilcrow">¶</a></p>
+<p id="section-4.7-17">The SOA record of the zone <span class="bcp14">SHOULD NOT</span> be changed at this point in time,
+because it cannot be re-signed with the inoperable key. Any secondary
+name servers relying on IXFR/AXFR need to be manually forced to load
+the new version of the zone.<a href="#section-4.7-17" class="pilcrow">¶</a></p>
+<p id="section-4.7-18">To ensure that no caches have DNSKEY RRset with the old CSK, the old
 DS record <span class="bcp14">MUST</span> remain in the parent zone for the duration of the
-retire interval (Iret), given by:<a href="#section-4.3-16" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.3-17">
+retire interval (Iret), given by:<a href="#section-4.7-18" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.7-19">
 <pre>
 Iret = Dsgn + DprpC + max(TTLkey, TTLsig)
-</pre><a href="#section-4.3-17" class="pilcrow">¶</a>
+</pre><a href="#section-4.7-19" class="pilcrow">¶</a>
 </div>
-<p id="section-4.3-18">Dsgn is the delay needed to ensure that all existing RRsets are signed
+<p id="section-4.7-20">Dsgn is the delay needed to ensure that all existing RRsets are signed
 with the new CSK. DprpC is the child propagation delay, the time it
 takes for changes to propagate to all authoritative nameserver
 instances of the child zone. TTLkey is the TTL of the DNSKEY RRset and
-TTLsig is the maximum TTL of all RRSIG records.<a href="#section-4.3-18" class="pilcrow">¶</a></p>
-<p id="section-4.3-19">Event 5: The old DS record can be removed from the parent zone at Trem.<a href="#section-4.3-19" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4.3-20">
+TTLsig is the maximum TTL of all RRSIG records.<a href="#section-4.7-20" class="pilcrow">¶</a></p>
+<p id="section-4.7-21">Event 5: The old DS record can be removed from the parent zone at Trem.<a href="#section-4.7-21" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.7-22">
 <pre>
 Trem = Tact + Iret
-</pre><a href="#section-4.3-20" class="pilcrow">¶</a>
+</pre><a href="#section-4.7-22" class="pilcrow">¶</a>
 </div>
-<p id="section-4.3-21">At the same time the old, inoperable CSK and all its signatures can be
-removed as well.<a href="#section-4.3-21" class="pilcrow">¶</a></p>
+<p id="section-4.7-23">At the same time the old, inoperable CSK and all its signatures can be
+removed as well.<a href="#section-4.7-23" class="pilcrow">¶</a></p>
+<p id="section-4.7-24">At this point the zone can be changed again.<a href="#section-4.7-24" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="implementation-status">
+<section id="section-5">
+      <h2 id="name-implementation-status">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation status</a>
+      </h2>
+<p id="section-5-1">RFC-EDITOR: This section is to be removed before publishing.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">The procedures described in this document have been verified with the following
+implementations.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<div id="knot-dns">
+<section id="section-5.1">
+        <h3 id="name-knot-dns">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-knot-dns" class="section-name selfRef">Knot DNS</a>
+        </h3>
+<p id="section-5.1-1">Manual steps required:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5.1-2">
+<li id="section-5.1-2.1">
+            <p id="section-5.1-2.1.1">Import the old DNSKEY RR(s) into the key manager ("import-pub")<a href="#section-5.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.2">
+            <p id="section-5.1-2.2.1">Generate a new DNSKEY RRset in an empty zone<a href="#section-5.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.3">
+            <p id="section-5.1-2.3.1">Replace DNSKEY RRset + DNSKEY RRSIGs in the original zone with those from step 2<a href="#section-5.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.4">
+            <p id="section-5.1-2.4.1">Load the modified zone from step 3 with "dnssec-signing: off"<a href="#section-5.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-5.1-3">Caveats:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.1-4.1">
+            <p id="section-5.1-4.1.1">Manually generating a new ZONEMD digest is not supported<a href="#section-5.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 </section>
 </div>
 <div id="security-considerations">
-<section id="section-5">
+<section id="section-6">
       <h2 id="name-security-considerations">
-<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-5-1">All security considerations of <span>[<a href="#RFC9364" class="cite xref">RFC9364</a>]</span> apply to this document.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">All security considerations of <span>[<a href="#RFC9364" class="cite xref">RFC9364</a>]</span> apply to this document.<a href="#section-6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-6">
+<section id="section-7">
       <h2 id="name-iana-considerations">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-6-1">This document has no IANA actions.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-7-1">This document has no IANA actions.<a href="#section-7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-combined-references">
-<section id="section-7">
+<section id="section-8">
       <h2 id="name-references">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
 <div id="sec-normative-references">
-<section id="section-7.1">
+<section id="section-8.1">
         <h3 id="name-normative-references">
-<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="RFC2119">[RFC2119]</dt>
@@ -1606,9 +1702,9 @@ removed as well.<a href="#section-4.3-21" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-informative-references">
-<section id="section-7.2">
+<section id="section-8.2">
         <h3 id="name-informative-references">
-<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="RFC6781">[RFC6781]</dt>
@@ -1623,17 +1719,21 @@ removed as well.<a href="#section-4.3-21" class="pilcrow">¶</a></p>
         <dd>
 <span class="refAuthor">Abley, J.</span>, <span class="refAuthor">Schlyter, J.</span>, <span class="refAuthor">Bailey, G.</span>, and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"DNSSEC Trust Anchor Publication for the Root Zone"</span>, <span class="seriesInfo">RFC 7958</span>, <span class="seriesInfo">DOI 10.17487/RFC7958</span>, <time datetime="2016-08" class="refDate">August 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7958">https://www.rfc-editor.org/rfc/rfc7958</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC8078">[RFC8078]</dt>
+        <dd>
+<span class="refAuthor">Gudmundsson, O.</span> and <span class="refAuthor">P. Wouters</span>, <span class="refTitle">"Managing DS Records from the Parent via CDS/CDNSKEY"</span>, <span class="seriesInfo">RFC 8078</span>, <span class="seriesInfo">DOI 10.17487/RFC8078</span>, <time datetime="2017-03" class="refDate">March 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8078">https://www.rfc-editor.org/rfc/rfc8078</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8976">[RFC8976]</dt>
+        <dd>
+<span class="refAuthor">Wessels, D.</span>, <span class="refAuthor">Barber, P.</span>, <span class="refAuthor">Weinberg, M.</span>, <span class="refAuthor">Kumari, W.</span>, and <span class="refAuthor">W. Hardaker</span>, <span class="refTitle">"Message Digest for DNS Zones"</span>, <span class="seriesInfo">RFC 8976</span>, <span class="seriesInfo">DOI 10.17487/RFC8976</span>, <time datetime="2021-02" class="refDate">February 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8976">https://www.rfc-editor.org/rfc/rfc8976</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC9499">[RFC9499]</dt>
         <dd>
 <span class="refAuthor">Hoffman, P.</span> and <span class="refAuthor">K. Fujiwara</span>, <span class="refTitle">"DNS Terminology"</span>, <span class="seriesInfo">BCP 219</span>, <span class="seriesInfo">RFC 9499</span>, <span class="seriesInfo">DOI 10.17487/RFC9499</span>, <time datetime="2024-03" class="refDate">March 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9499">https://www.rfc-editor.org/rfc/rfc9499</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9824">[RFC9824]</dt>
-        <dd>
-<span class="refAuthor">Huque, S.</span>, <span class="refAuthor">Elmerot, C.</span>, and <span class="refAuthor">O. Gudmundsson</span>, <span class="refTitle">"Compact Denial of Existence in DNSSEC"</span>, <span class="seriesInfo">RFC 9824</span>, <span class="seriesInfo">DOI 10.17487/RFC9824</span>, <time datetime="2025-09" class="refDate">September 2025</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9824">https://www.rfc-editor.org/rfc/rfc9824</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="Shamir">[Shamir]</dt>
       <dd>
-<span class="refAuthor">Shamir, A.</span>, <span class="refTitle">"How to Share a Secret"</span>, <span class="seriesInfo">ACM Press Communications of the ACM, Vol. 22, No. 11, pp. 612-613</span>, <span class="seriesInfo">DOI 10.1145/359168.359176</span>, <time datetime="1979-11" class="refDate">November 1979</time>, <span>&lt;<a href="https://doi.org/10.1145/359168.359176">https://doi.org/10.1145/359168.359176</a>&gt;</span>. </dd>
+<span class="refAuthor">Huque, S.</span>, <span class="refAuthor">Elmerot, C.</span>, and <span class="refAuthor">O. Gudmundsson</span>, <span class="refTitle">"Compact Denial of Existence in DNSSEC"</span>, <span class="seriesInfo">RFC 9824</span>, <span class="seriesInfo">DOI 10.17487/RFC9824</span>, <time datetime="2025-09" class="refDate">September 2025</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9824">https://www.rfc-editor.org/rfc/rfc9824</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -1659,6 +1759,21 @@ the authors for their work:<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.4">
           <p id="appendix-A-2.4.1">W. (Matthijs) Mekking<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="appendix-A-3">Additionally, we thank the following people for contributing ideas and feedback:<a href="#appendix-A-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A-4.1">
+          <p id="appendix-A-4.1.1">Libor Peltan<a href="#appendix-A-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-A-4.2">
+          <p id="appendix-A-4.2.1">Peter Thomassen<a href="#appendix-A-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-A-4.3">
+          <p id="appendix-A-4.3.1">Anand Buddhdev<a href="#appendix-A-4.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-A-4.4">
+          <p id="appendix-A-4.4.1">Wes Hardaker<a href="#appendix-A-4.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
